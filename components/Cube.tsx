@@ -1,25 +1,26 @@
-import { CUBE_ACTION, getActionByKey, handleCubeAction } from '@/utils';
+import { getInputClearState, getInputState, handleCubeAction, Input } from '@/utils';
 import { useFrame } from '@react-three/fiber';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AxesHelper, Mesh } from 'three';
 
 const Cube = () => {
-  const [action, setAction] = useState(CUBE_ACTION.IDLE);
-
   const ref = useRef<Mesh>(null);
+  const inputRef = useRef<Input>({ direction: 0, rotate: 0 });
 
   useFrame((_state, delta) => {
     if (!ref.current) return;
 
-    handleCubeAction({ action, delta, cube: ref.current });
+    const { direction, rotate } = inputRef.current;
+
+    handleCubeAction({ cube: ref.current, delta, rotate, direction });
   });
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
-    setAction(getActionByKey(e.key.toLowerCase()));
+    inputRef.current = { ...inputRef.current, ...getInputState(e.key.toLowerCase()) };
   }, []);
 
-  const onKeyUp = useCallback(() => {
-    setAction(CUBE_ACTION.IDLE);
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
+    inputRef.current = { ...inputRef.current, ...getInputClearState(e.key.toLowerCase()) };
   }, []);
 
   useEffect(() => {

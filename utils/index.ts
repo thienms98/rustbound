@@ -1,58 +1,74 @@
-import { Group, Mesh } from 'three';
+import { Mesh } from 'three';
 
-export enum CUBE_ACTION {
-  IDLE,
-  FORWARD,
-  BACWARD,
-  ROTATE_LEFT,
-  ROTATE_RIGHT,
+export enum DIRECTION {
+  BACKWARD = -1,
+  NONE = 0,
+  FORWARD = 1,
 }
+
+export enum ROTATION {
+  RIGHT = -1,
+  LEFT = 1,
+  NONE = 0,
+}
+
+export type Input = {
+  direction: DIRECTION;
+  rotate: ROTATION;
+};
 
 export const MOVEMENT_SPEED = 1;
 export const ROTATE_SPEED = Math.PI / 3;
 
-export const getActionByKey = (key: string) => {
+export const getInputState = (key: string): Partial<Input> => {
   switch (key) {
     case 'a':
     case 'arrowleft':
-      return CUBE_ACTION.ROTATE_LEFT;
+      return { rotate: ROTATION.LEFT };
 
     case 'd':
     case 'arrowright':
-      return CUBE_ACTION.ROTATE_RIGHT;
+      return { rotate: ROTATION.RIGHT };
 
     case 'w':
     case 'arrowup':
-      return CUBE_ACTION.FORWARD;
+      return { direction: DIRECTION.FORWARD };
 
     case 's':
     case 'arrowdown':
-      return CUBE_ACTION.BACWARD;
+      return { direction: DIRECTION.BACKWARD };
 
     default:
-      return CUBE_ACTION.IDLE;
+      return {};
   }
 };
 
-export const handleCubeAction = ({ action, cube, delta }: { action: CUBE_ACTION; cube: Mesh; delta: number }) => {
+export const getInputClearState = (key: string): Partial<Input> => {
+  switch (key) {
+    case 'a':
+    case 'arrowleft':
+    case 'd':
+    case 'arrowright':
+      return { rotate: ROTATION.NONE };
+
+    case 'w':
+    case 'arrowup':
+    case 's':
+    case 'arrowdown':
+      return { direction: DIRECTION.NONE };
+
+    default:
+      return {};
+  }
+};
+
+export const handleCubeAction = ({ cube, delta, direction, rotate }: { cube: Mesh; delta: number } & Input) => {
   const angle = cube.rotation.y;
   const dirX = Math.sin(angle);
   const dirZ = Math.cos(angle);
 
-  switch (action) {
-    case CUBE_ACTION.FORWARD:
-      cube.position.x += dirX * delta * MOVEMENT_SPEED;
-      cube.position.z += dirZ * delta * MOVEMENT_SPEED;
-      break;
-    case CUBE_ACTION.BACWARD:
-      cube.position.x -= dirX * delta * MOVEMENT_SPEED;
-      cube.position.z -= dirZ * delta * MOVEMENT_SPEED;
-      break;
-    case CUBE_ACTION.ROTATE_LEFT:
-      cube.rotation.y += delta * ROTATE_SPEED;
-      break;
-    case CUBE_ACTION.ROTATE_RIGHT:
-      cube.rotation.y -= delta * ROTATE_SPEED;
-      break;
-  }
+  cube.position.x += dirX * delta * MOVEMENT_SPEED * direction;
+  cube.position.z += dirZ * delta * MOVEMENT_SPEED * direction;
+
+  cube.rotation.y += delta * ROTATE_SPEED * rotate;
 };
