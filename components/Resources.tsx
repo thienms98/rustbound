@@ -1,5 +1,5 @@
-import { forwardRef } from "react";
-import { Group } from "three";
+import { forwardRef } from 'react';
+import { Group } from 'three';
 
 const Resources = forwardRef<Group>((_, ref) => {
   return (
@@ -8,8 +8,8 @@ const Resources = forwardRef<Group>((_, ref) => {
         position={[-20, 0.5, 20]}
         rotation={[Math.PI / 2, 0, 0]}
         userData={{
-          type: "tree",
-          hp: 3
+          type: 'stone',
+          hp: 5,
         }}
       >
         <torusGeometry args={[4, 1, 30, 30]} />
@@ -19,8 +19,8 @@ const Resources = forwardRef<Group>((_, ref) => {
         position={[-20, 0.5, -6]}
         rotation={[Math.PI / 2, 0, 0]}
         userData={{
-          type: "tree",
-          hp: 3
+          type: 'stone',
+          hp: 5,
         }}
       >
         <torusGeometry args={[4, 1, 30, 30]} />
@@ -29,8 +29,8 @@ const Resources = forwardRef<Group>((_, ref) => {
       <mesh
         position={[20, 2, 20]}
         userData={{
-          type: "rock",
-          hp: 5
+          type: 'wood',
+          hp: 3,
         }}
       >
         <coneGeometry args={[2, 4, 64, 1]} />
@@ -39,8 +39,8 @@ const Resources = forwardRef<Group>((_, ref) => {
       <mesh
         position={[10, 2, 15]}
         userData={{
-          type: "rock",
-          hp: 5
+          type: 'wood',
+          hp: 3,
         }}
       >
         <coneGeometry args={[2, 4, 64, 1]} />
@@ -50,5 +50,5 @@ const Resources = forwardRef<Group>((_, ref) => {
   );
 });
 
-Resources.displayName = "Resources";
+Resources.displayName = 'Resources';
 export default Resources;
