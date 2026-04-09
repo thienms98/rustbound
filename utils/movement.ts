@@ -1,11 +1,6 @@
 import { DIRECTION, ROTATION } from "@/constants/character";
 import { CharacterStats } from "@/types/character";
-import { Camera, Mesh, Vector2, Vector3 } from "three";
-
-export type Input = {
-  direction: DIRECTION;
-  rotation: ROTATION;
-};
+import { Camera, Mesh, Vector2 } from "three";
 
 export type Velocity = {
   x: number;
@@ -15,31 +10,39 @@ export type Velocity = {
 export const MAX_SPEED = 12;
 export const ACCELERATE = 2;
 export const ROTATE_SPEED = Math.PI / 2;
+export const ATTACK_TIME = 1;
 
-export const getInputState = (key: string): Partial<Input> => {
+export const getInputState = (
+  key: string,
+  stats: CharacterStats
+): CharacterStats => {
   switch (key) {
     case "a":
     case "arrowleft":
-      return { rotation: ROTATION.LEFT };
+      return { ...stats, rotation: ROTATION.LEFT };
 
     case "d":
     case "arrowright":
-      return { rotation: ROTATION.RIGHT };
+      return { ...stats, rotation: ROTATION.RIGHT };
 
     case "w":
     case "arrowup":
-      return { direction: DIRECTION.FORWARD };
+      return { ...stats, direction: DIRECTION.FORWARD };
 
     case "s":
     case "arrowdown":
-      return { direction: DIRECTION.BACKWARD };
+      return { ...stats, direction: DIRECTION.BACKWARD };
+
+    case "e":
+      if (stats.attackCooldown) return stats;
+      return { ...stats, isAttack: true, attackCooldown: ATTACK_TIME };
 
     default:
-      return {};
+      return stats;
   }
 };
 
-export const getInputClearState = (key: string): Partial<Input> => {
+export const getInputClearState = (key: string): Partial<CharacterStats> => {
   switch (key) {
     case "a":
     case "arrowleft":
@@ -59,7 +62,7 @@ export const getInputClearState = (key: string): Partial<Input> => {
 };
 
 export const updateVelocity = (
-  payload: Input & { velocity: Velocity; cube: Mesh; delta: number }
+  payload: CharacterStats & { cube: Mesh; delta: number }
 ) => {
   const { direction, cube, velocity } = payload;
   const angle = cube.rotation.y;
@@ -87,7 +90,7 @@ export const updatePosition = ({
   delta,
   rotation,
   velocity
-}: { cube: Mesh; delta: number; velocity: Velocity } & Input) => {
+}: { cube: Mesh; delta: number } & CharacterStats) => {
   cube.position.x += velocity.x * delta;
   cube.position.z += velocity.z * delta;
 
