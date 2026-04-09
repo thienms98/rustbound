@@ -2,6 +2,7 @@ import { CharacterStats } from "@/types/character";
 import {
   getInputClearState,
   getInputState,
+  updateCameraPosition,
   updatePosition,
   updateVelocity
 } from "@/utils/movement";
@@ -28,17 +29,14 @@ const Cube = () => {
     const payload = {
       cube: cubeRef.current,
       delta,
+      camera,
       ...statsRef.current
     };
 
     updateVelocity(payload);
     updatePosition(payload);
 
-    camera.position.x = cubeRef.current.position.x;
-    camera.position.y = cubeRef.current.position.y + 20;
-    camera.position.z = cubeRef.current.position.z + 30;
-
-    camera.lookAt(cubeRef.current.position);
+    updateCameraPosition(payload);
   });
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {

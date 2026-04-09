@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import Cube from '@/components/Cube';
-import Floor from '@/components/Floor';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import Cube from "@/components/Cube";
+import Floor from "@/components/Floor";
+import { Canvas } from "@react-three/fiber";
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
         <spotLight />
         <Cube />
         <Floor />
-        <OrbitControls />
       </Canvas>
     </main>
   );

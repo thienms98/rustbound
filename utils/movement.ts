@@ -1,5 +1,6 @@
 import { DIRECTION, ROTATION } from "@/constants/character";
-import { Mesh, Vector2 } from "three";
+import { CharacterStats } from "@/types/character";
+import { Camera, Mesh, Vector2, Vector3 } from "three";
 
 export type Input = {
   direction: DIRECTION;
@@ -91,4 +92,35 @@ export const updatePosition = ({
   cube.position.z += velocity.z * delta;
 
   cube.rotation.y += delta * ROTATE_SPEED * rotation;
+};
+
+const CAMERA_SMOOTH = 0.05;
+const CAMERA_OFFSET = {
+  x: 30,
+  y: 20,
+  z: 30
+};
+
+export const updateCameraPosition = (
+  payload: {
+    cube: Mesh;
+    camera: Camera;
+  } & CharacterStats
+) => {
+  const { cube, camera } = payload;
+  const angle = cube.rotation.y;
+  const dirX = Math.sin(angle);
+  const dirZ = Math.cos(angle);
+
+  // camera always follow up character
+  const targetX = cube.position.x - dirX * CAMERA_OFFSET.x;
+  const targetY = cube.position.y + CAMERA_OFFSET.y;
+  const targetZ = cube.position.z - dirZ * CAMERA_OFFSET.z;
+
+  // delay to make camera smoother
+  camera.position.x += (targetX - camera.position.x) * CAMERA_SMOOTH;
+  camera.position.y += (targetY - camera.position.y) * CAMERA_SMOOTH;
+  camera.position.z += (targetZ - camera.position.z) * CAMERA_SMOOTH;
+
+  camera.lookAt(cube.position);
 };
