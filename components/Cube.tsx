@@ -1,35 +1,61 @@
-import { getInputClearState, getInputState, handleCubeAction, Input } from '@/utils';
-import { useFrame } from '@react-three/fiber';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AxesHelper, Mesh } from 'three';
+import { Character } from "@/types/character";
+import {
+  getInputClearState,
+  getInputState,
+  updatePosition,
+  updateVelocity
+} from "@/utils/movement";
+import { useFrame } from "@react-three/fiber";
+import { useCallback, useEffect, useRef } from "react";
+import { AxesHelper, Mesh } from "three";
 
 const Cube = () => {
   const ref = useRef<Mesh>(null);
-  const inputRef = useRef<Input>({ direction: 0, rotate: 0 });
+  const characterRef = useRef<Character>({
+    direction: 0,
+    rotation: 0,
+    velocity: {
+      x: 0,
+      z: 0
+    }
+  });
 
   useFrame((_state, delta) => {
     if (!ref.current) return;
 
-    const { direction, rotate } = inputRef.current;
+    const character = characterRef.current;
 
-    handleCubeAction({ cube: ref.current, delta, rotate, direction });
+    const payload = {
+      cube: ref.current,
+      delta,
+      ...character
+    };
+
+    updateVelocity(payload);
+    updatePosition(payload);
   });
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
-    inputRef.current = { ...inputRef.current, ...getInputState(e.key.toLowerCase()) };
+    characterRef.current = {
+      ...characterRef.current,
+      ...getInputState(e.key.toLowerCase())
+    };
   }, []);
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
-    inputRef.current = { ...inputRef.current, ...getInputClearState(e.key.toLowerCase()) };
+    characterRef.current = {
+      ...characterRef.current,
+      ...getInputClearState(e.key.toLowerCase())
+    };
   }, []);
 
   useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, [onKeyDown, onKeyUp]);
 
