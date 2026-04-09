@@ -1,17 +1,17 @@
-import { Character } from "@/types/character";
+import { CharacterStats } from "@/types/character";
 import {
   getInputClearState,
   getInputState,
   updatePosition,
   updateVelocity
 } from "@/utils/movement";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useRef } from "react";
 import { AxesHelper, Mesh } from "three";
 
 const Cube = () => {
-  const ref = useRef<Mesh>(null);
-  const characterRef = useRef<Character>({
+  const cubeRef = useRef<Mesh>(null);
+  const statsRef = useRef<CharacterStats>({
     direction: 0,
     rotation: 0,
     velocity: {
@@ -20,31 +20,37 @@ const Cube = () => {
     }
   });
 
-  useFrame((_state, delta) => {
-    if (!ref.current) return;
+  // const { camera } = useThree();
 
-    const character = characterRef.current;
+  useFrame(({ camera }, delta) => {
+    if (!cubeRef.current) return;
 
     const payload = {
-      cube: ref.current,
+      cube: cubeRef.current,
       delta,
-      ...character
+      ...statsRef.current
     };
 
     updateVelocity(payload);
     updatePosition(payload);
+
+    camera.position.x = cubeRef.current.position.x;
+    camera.position.y = cubeRef.current.position.y + 20;
+    camera.position.z = cubeRef.current.position.z + 30;
+
+    camera.lookAt(cubeRef.current.position);
   });
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
-    characterRef.current = {
-      ...characterRef.current,
+    statsRef.current = {
+      ...statsRef.current,
       ...getInputState(e.key.toLowerCase())
     };
   }, []);
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
-    characterRef.current = {
-      ...characterRef.current,
+    statsRef.current = {
+      ...statsRef.current,
       ...getInputClearState(e.key.toLowerCase())
     };
   }, []);
@@ -60,7 +66,7 @@ const Cube = () => {
   }, [onKeyDown, onKeyUp]);
 
   return (
-    <mesh ref={ref}>
+    <mesh ref={cubeRef}>
       <primitive object={new AxesHelper(2)} />
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color="white" />

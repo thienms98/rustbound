@@ -1,16 +1,5 @@
+import { DIRECTION, ROTATION } from "@/constants/character";
 import { Mesh, Vector2 } from "three";
-
-export enum DIRECTION {
-  BACKWARD = -1,
-  NONE = 0,
-  FORWARD = 1
-}
-
-export enum ROTATION {
-  RIGHT = -1,
-  LEFT = 1,
-  NONE = 0
-}
 
 export type Input = {
   direction: DIRECTION;
