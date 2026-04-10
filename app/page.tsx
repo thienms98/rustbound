@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import Floor from '@/components/Object3D/Floor';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import PlayerController from '@/components/PlayerController';
-import Inventory from '@/components/Inventory';
-
-const env = process.env.NODE_ENV;
+import Floor from "@/components/Object3D/Floor";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import PlayerController from "@/components/PlayerController";
+import Inventory from "@/components/Inventory";
 
 export default function Home() {
   return (
@@ -16,7 +14,7 @@ export default function Home() {
         <spotLight />
         <Floor />
         <PlayerController />
-        {/* {env === 'development' && <OrbitControls />} */}
+        <OrbitControls />
       </Canvas>
       <Inventory />
     </main>
