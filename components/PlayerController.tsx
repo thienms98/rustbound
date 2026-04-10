@@ -1,6 +1,5 @@
 import Player from './Object3D/Player';
 import Resources, { Resource } from './Resources';
-import { CharacterStats } from '@/types/character';
 import { ATTACK_TIME, getInputClearState, getInputState, initialStats, updateCameraPosition, updatePosition, updateVelocity } from '@/lib/movement';
 import { handleAttack } from '@/lib/attack';
 import { useFrame } from '@react-three/fiber';
@@ -8,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Group, Object3D, Raycaster, Vector3 } from 'three';
 import { useInventory } from '@/store/inventory';
 import { getRaycastedObjects } from '@/lib/raycaster';
-import { getDistance } from '@/lib/resource';
+import { getCloseIntersects, getRespawnResource } from '@/lib/resource';
 
 const PlayerController = () => {
   const addStone = useInventory((state) => state.addStone);
@@ -23,7 +22,7 @@ const PlayerController = () => {
     {
       id: 'tree-1',
       type: 'tree',
-      position: new Vector3(10, 1, 10),
+      position: new Vector3(10, 0.5, 10),
       hp: 3,
       maxHp: 3,
       alive: true,
@@ -31,7 +30,7 @@ const PlayerController = () => {
     {
       id: 'tree-2',
       type: 'tree',
-      position: new Vector3(10, 1, 12),
+      position: new Vector3(10, 0.5, 12),
       hp: 3,
       maxHp: 3,
       alive: true,
@@ -48,19 +47,18 @@ const PlayerController = () => {
 
   const raycasterRef = useRef(new Raycaster());
 
-  const handleObjectHit = (object: Object3D) => {
-    setResources((prev) =>
-      prev.map((item) =>
-        item.id === object.userData.id
-          ? {
-              ...item,
-              hp: item.hp - 1,
-              alive: false,
-              respawnAt: Date.now() + 300000,
-            }
-          : item,
-      ),
+  const handleObjectHit = (object: Object3D, resources: Resource[]) => {
+    const updatedResources = resources.map((item) =>
+      item.id === object.userData.id
+        ? {
+            ...item,
+            hp: Math.max(item.hp - 1, 0),
+            alive: Boolean(Math.max(item.hp - 1, 0)),
+            respawnAt: Date.now() + 3000,
+          }
+        : item,
     );
+
     if (object.userData.hp - 1 <= 0)
       switch (object.userData.type) {
         case 'tree':
@@ -70,6 +68,8 @@ const PlayerController = () => {
           addStone();
           break;
       }
+
+    return updatedResources;
   };
 
   useFrame(({ camera }, delta) => {
@@ -89,26 +89,34 @@ const PlayerController = () => {
 
     // updateCameraPosition(payload);
 
-    if (!objectsRef.current) return;
+    let newResources = [...resources];
 
-    const intersects = getRaycastedObjects({
-      character: playerRef.current,
-      objects: [objectsRef.current],
-      raycaster: raycasterRef.current,
-    });
-
-    setTargets(intersects.map((item) => (getDistance(item.object, playerRef.current!) < 5 ? item.object.userData.id : null)));
-
-    if (statsRef.current.isAttack) {
-      console.log('attacking', intersects[0]);
-      handleAttack({
-        intersects,
-        onHit: handleObjectHit,
+    if (objectsRef.current) {
+      const intersects = getRaycastedObjects({
+        character: playerRef.current,
+        objects: [objectsRef.current],
+        raycaster: raycasterRef.current,
       });
 
-      statsRef.current.isAttack = false;
-      statsRef.current.attackCooldown = ATTACK_TIME;
+      setTargets(getCloseIntersects(playerRef.current, intersects));
+
+      if (statsRef.current.isAttack) {
+        handleAttack({
+          intersects,
+          onHit: (object) => {
+            newResources = handleObjectHit(object, newResources);
+          },
+        });
+
+        statsRef.current.isAttack = false;
+        statsRef.current.attackCooldown = ATTACK_TIME;
+
+        console.log(newResources);
+      }
     }
+
+    newResources = getRespawnResource(newResources);
+    setResources(newResources);
   });
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {

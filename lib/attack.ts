@@ -1,4 +1,4 @@
-import { Intersection, Object3D } from "three";
+import { Intersection, Object3D } from 'three';
 
 const ATTACK_RANGE = 3;
 
@@ -10,11 +10,8 @@ interface AttackPayload {
 
 export const handleAttack = (payload: AttackPayload) => {
   const { intersects, onHit, onMiss } = payload;
-  console.log("🚀 ~ handleAttack ~ intersects:", intersects);
   const closest = intersects[0];
   if (!closest) return;
-
-  console.log(closest.distance);
 
   if (closest.distance < ATTACK_RANGE) {
     if (onHit) onHit(closest.object);

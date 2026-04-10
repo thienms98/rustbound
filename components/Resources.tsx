@@ -33,7 +33,7 @@ const Resources = forwardRef<Group, Props>(({ targets, resources }, ref) => {
                 hp: item.hp,
               }}
             >
-              {item.type === 'tree' ? <coneGeometry args={[1, 3, 64, 1]} /> : <sphereGeometry args={[1, 32, 16]} />}
+              {item.type === 'tree' ? <coneGeometry args={[1, 2, 64, 1]} /> : <sphereGeometry args={[1, 32, 16]} />}
               <meshStandardMaterial color={item.type === 'tree' ? 'green' : 'gray'} />
               {targets.includes(item.id) && (
                 <Html position={[0, 3, 0]} center>
