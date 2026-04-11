@@ -1,13 +1,26 @@
-import Player from './Object3D/Player';
-import Resources, { Resource } from './Resources';
-import { ATTACK_TIME, getInputClearState, getInputState, initialStats, updateCameraPosition, updatePosition, updateVelocity } from '@/lib/movement';
-import { handleAttack } from '@/lib/attack';
-import { useFrame } from '@react-three/fiber';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Group, Object3D, Raycaster, Vector3 } from 'three';
-import { useInventory } from '@/store/inventory';
-import { getRaycastedObjects } from '@/lib/raycaster';
-import { getCloseIntersects, getRespawnResource } from '@/lib/resource';
+import Player from "./Object3D/Player";
+import Resources, { Resource } from "./Resources";
+import {
+  ATTACK_TIME,
+  getInputClearState,
+  getInputState,
+  initialStats,
+  updateCameraPosition,
+  updatePosition,
+  updateVelocity
+} from "@/lib/movement";
+import { handleAttack } from "@/lib/attack";
+import { useFrame } from "@react-three/fiber";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Group, Object3D, Raycaster } from "three";
+import { useInventory } from "@/store/inventory";
+import { getRaycastedObjects } from "@/lib/raycaster";
+import {
+  getCloseIntersects,
+  getRespawnResource,
+  initialSpawn,
+  ResourceType
+} from "@/lib/resource";
 
 const PlayerController = () => {
   const addStone = useInventory((state) => state.addStone);
@@ -18,32 +31,7 @@ const PlayerController = () => {
   const statsRef = useRef(initialStats);
 
   const [targets, setTargets] = useState<string[]>([]);
-  const [resources, setResources] = useState<Resource[]>([
-    {
-      id: 'tree-1',
-      type: 'tree',
-      position: new Vector3(10, 0.5, 10),
-      hp: 3,
-      maxHp: 3,
-      alive: true,
-    },
-    {
-      id: 'tree-2',
-      type: 'tree',
-      position: new Vector3(10, 0.5, 12),
-      hp: 3,
-      maxHp: 3,
-      alive: true,
-    },
-    {
-      id: 'rock-1',
-      type: 'rock',
-      position: new Vector3(-10, 0.5, 5),
-      hp: 5,
-      maxHp: 5,
-      alive: true,
-    },
-  ]);
+  const [resources, setResources] = useState<Resource[]>(initialSpawn());
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -54,17 +42,17 @@ const PlayerController = () => {
             ...item,
             hp: Math.max(item.hp - 1, 0),
             alive: Boolean(Math.max(item.hp - 1, 0)),
-            respawnAt: Date.now() + 3000,
+            respawnAt: Date.now() + 10000
           }
-        : item,
+        : item
     );
 
     if (object.userData.hp - 1 <= 0)
       switch (object.userData.type) {
-        case 'tree':
+        case ResourceType.TREE:
           addWood();
           break;
-        case 'rock':
+        case ResourceType.ROCK:
           addStone();
           break;
       }
@@ -79,13 +67,16 @@ const PlayerController = () => {
       player: playerRef.current,
       delta,
       camera,
-      ...statsRef.current,
+      ...statsRef.current
     };
 
     updateVelocity(payload);
     updatePosition(payload);
     statsRef.current.attackCooldown -= delta;
-    statsRef.current.attackCooldown = Math.max(statsRef.current.attackCooldown, 0);
+    statsRef.current.attackCooldown = Math.max(
+      statsRef.current.attackCooldown,
+      0
+    );
 
     // updateCameraPosition(payload);
 
@@ -95,7 +86,7 @@ const PlayerController = () => {
       const intersects = getRaycastedObjects({
         character: playerRef.current,
         objects: [objectsRef.current],
-        raycaster: raycasterRef.current,
+        raycaster: raycasterRef.current
       });
 
       setTargets(getCloseIntersects(playerRef.current, intersects));
@@ -105,7 +96,7 @@ const PlayerController = () => {
           intersects,
           onHit: (object) => {
             newResources = handleObjectHit(object, newResources);
-          },
+          }
         });
 
         statsRef.current.isAttack = false;
@@ -126,17 +117,17 @@ const PlayerController = () => {
   const onKeyUp = useCallback((e: KeyboardEvent) => {
     statsRef.current = {
       ...statsRef.current,
-      ...getInputClearState(e.key.toLowerCase()),
+      ...getInputClearState(e.key.toLowerCase())
     };
   }, []);
 
   useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, [onKeyDown, onKeyUp]);
 

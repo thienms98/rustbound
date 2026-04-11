@@ -1,6 +1,7 @@
-import { Html } from '@react-three/drei';
-import { forwardRef } from 'react';
-import { Group, Vector3 } from 'three';
+import { ResourceType } from "@/lib/resource";
+import { Html } from "@react-three/drei";
+import { forwardRef } from "react";
+import { Group, Vector3 } from "three";
 
 interface Props {
   targets: string[];
@@ -9,7 +10,7 @@ interface Props {
 
 export interface Resource {
   id: string;
-  type: string;
+  type: ResourceType;
   position: Vector3;
   hp: number;
   maxHp: number;
@@ -30,24 +31,33 @@ const Resources = forwardRef<Group, Props>(({ targets, resources }, ref) => {
               userData={{
                 id: item.id,
                 type: item.type,
-                hp: item.hp,
+                hp: item.hp
               }}
             >
-              {item.type === 'tree' ? <coneGeometry args={[1, 2, 64, 1]} /> : <sphereGeometry args={[1, 32, 16]} />}
-              <meshStandardMaterial color={item.type === 'tree' ? 'green' : 'gray'} />
+              {item.type === ResourceType.TREE ? (
+                <coneGeometry args={[1, 2, 64, 1]} />
+              ) : (
+                <sphereGeometry args={[1, 32, 16]} />
+              )}
+              <meshStandardMaterial
+                color={item.type === ResourceType.TREE ? "green" : "gray"}
+              />
               {targets.includes(item.id) && (
                 <Html position={[0, 3, 0]} center>
                   <div className="w-12.5 h-1.5 bg-green-50">
-                    <div className="h-full bg-green-500" style={{ width: `${(item.hp / item.maxHp) * 100}%` }} />
+                    <div
+                      className="h-full bg-green-500"
+                      style={{ width: `${(item.hp / item.maxHp) * 100}%` }}
+                    />
                   </div>
                 </Html>
               )}
             </mesh>
-          ),
+          )
       )}
     </group>
   );
 });
 
-Resources.displayName = 'Resources';
+Resources.displayName = "Resources";
 export default Resources;
