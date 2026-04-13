@@ -18,3 +18,8 @@ export interface CharacterStats {
   isAttack: boolean;
   attackCooldown: number;
 }
+
+export interface CharacterAction {
+  type: string;
+  position: Vector3;
+}

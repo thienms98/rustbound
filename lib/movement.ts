@@ -1,4 +1,3 @@
-import { DIRECTION, ROTATION } from "@/constants/character";
 import { CharacterStats } from "@/types/character";
 import { Camera, Object3D, Vector2 } from "three";
 
@@ -10,7 +9,6 @@ export type Velocity = {
 export const MAX_SPEED = 12;
 export const ACCELERATE = 2;
 export const ROTATE_SPEED = Math.PI / 2;
-export const ATTACK_TIME = 0.5;
 
 export const initialStats: CharacterStats = {
   direction: 0,
@@ -21,55 +19,6 @@ export const initialStats: CharacterStats = {
   },
   isAttack: false,
   attackCooldown: 0
-};
-
-export const getInputState = (
-  key: string,
-  stats: CharacterStats
-): CharacterStats => {
-  switch (key) {
-    case "a":
-    case "arrowleft":
-      return { ...stats, rotation: ROTATION.LEFT };
-
-    case "d":
-    case "arrowright":
-      return { ...stats, rotation: ROTATION.RIGHT };
-
-    case "w":
-    case "arrowup":
-      return { ...stats, direction: DIRECTION.FORWARD };
-
-    case "s":
-    case "arrowdown":
-      return { ...stats, direction: DIRECTION.BACKWARD };
-
-    case "e":
-      if (stats.attackCooldown) return stats;
-      return { ...stats, isAttack: true, attackCooldown: ATTACK_TIME };
-
-    default:
-      return stats;
-  }
-};
-
-export const getInputClearState = (key: string): Partial<CharacterStats> => {
-  switch (key) {
-    case "a":
-    case "arrowleft":
-    case "d":
-    case "arrowright":
-      return { rotation: ROTATION.NONE };
-
-    case "w":
-    case "arrowup":
-    case "s":
-    case "arrowdown":
-      return { direction: DIRECTION.NONE };
-
-    default:
-      return {};
-  }
 };
 
 export const updateVelocity = (
@@ -111,7 +60,7 @@ export const updatePosition = ({
 const CAMERA_SMOOTH = 0.05;
 const CAMERA_OFFSET = {
   x: 30,
-  y: 20,
+  y: 12,
   z: 30
 };
 

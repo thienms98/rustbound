@@ -1,18 +1,16 @@
 import Player from "./Object3D/Player";
 import Resources, { Resource } from "./Resources";
 import {
-  ATTACK_TIME,
-  getInputClearState,
-  getInputState,
   initialStats,
   updateCameraPosition,
   updatePosition,
   updateVelocity
 } from "@/lib/movement";
-import { handleAttack } from "@/lib/attack";
+import { getInputClearState, getInputState } from "@/lib/keyboard";
+import { ATTACK_TIME, handleAttack } from "@/lib/attack";
 import { useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Group, Object3D, Raycaster } from "three";
+import { Object3D, Raycaster } from "three";
 import { useInventory } from "@/store/inventory";
 import { getRaycastedObjects } from "@/lib/raycaster";
 import {
@@ -21,17 +19,19 @@ import {
   initialSpawn,
   ResourceType
 } from "@/lib/resource";
-
+import AttackEffect from "./AttackEffect";
+import { CharacterAction } from "@/types/character";
 const PlayerController = () => {
   const addStone = useInventory((state) => state.addStone);
   const addWood = useInventory((state) => state.addWood);
 
   const playerRef = useRef<Object3D>(null);
-  const objectsRef = useRef<Group>(null);
+  const objectsRef = useRef<Object3D>(null);
   const statsRef = useRef(initialStats);
 
-  const [targets, setTargets] = useState<string[]>([]);
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
+  const [targets, setTargets] = useState<string[]>([]);
+  const [actions, setActions] = useState<CharacterAction[]>([]);
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -78,7 +78,7 @@ const PlayerController = () => {
       0
     );
 
-    // updateCameraPosition(payload);
+    updateCameraPosition(payload);
 
     let newResources = [...resources];
 
@@ -134,6 +134,7 @@ const PlayerController = () => {
   return (
     <>
       <Player ref={playerRef} />
+      <AttackEffect ref={playerRef} />
       <Resources ref={objectsRef} targets={targets} resources={resources} />
     </>
   );

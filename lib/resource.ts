@@ -47,9 +47,9 @@ export const initialSpawn = (resources: Resource[] = []) => {
 const spawnResource = (
   type: ResourceType,
   resources: Resource[],
-  restrictedArea?: number[][],
-  attempts = MAX_SPAWN_ATTEMPS
+  restrictedArea?: number[][]
 ): Resource[] => {
+  let attempts = MAX_SPAWN_ATTEMPS;
   while (attempts) {
     attempts--;
 
@@ -77,20 +77,27 @@ const spawnResource = (
 export const getRespawnResource = (resources: Resource[]) => {
   return resources.map((r) => {
     if (r.alive || (r.respawnAt && r.respawnAt >= Date.now())) return r;
+    let attempts = MAX_SPAWN_ATTEMPS;
+    while (attempts) {
+      attempts--;
 
-    const randomPosition = getRandomPosition(restrictedAreas[r.type]);
-    const validPosition = resources.every(
-      (r) => getDistance(r.position, randomPosition) > MINIMUM_DISTANCE
-    );
-    if (!validPosition) return r;
+      const randomPosition = getRandomPosition(restrictedAreas[r.type]);
+      const validPosition = resources.every(
+        (r) =>
+          !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE
+      );
+      if (!validPosition) continue;
 
-    return {
-      ...r,
-      position: randomPosition,
-      hp: MAX_HP,
-      maxHp: MAX_HP,
-      alive: true
-    };
+      return {
+        ...r,
+        position: randomPosition,
+        hp: MAX_HP,
+        maxHp: MAX_HP,
+        alive: true
+      };
+    }
+
+    return r;
   });
 };
 

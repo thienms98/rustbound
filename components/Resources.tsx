@@ -1,7 +1,7 @@
 import { ResourceType } from "@/lib/resource";
 import { Html } from "@react-three/drei";
 import { forwardRef } from "react";
-import { Group, Vector3 } from "three";
+import { Object3D, Vector3 } from "three";
 
 interface Props {
   targets: string[];
@@ -19,7 +19,7 @@ export interface Resource {
   respawnAt?: number; // timestamp
 }
 
-const Resources = forwardRef<Group, Props>(({ targets, resources }, ref) => {
+const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
   return (
     <group ref={ref}>
       {resources.map(

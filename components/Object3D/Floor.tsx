@@ -4,6 +4,7 @@ const Floor = () => {
       <planeGeometry args={[100, 100]} />
       {/* <meshStandardMaterial color="gray" /> */}
       <shaderMaterial
+        side={2}
         fragmentShader={`
           varying vec2 vUv;
           void main() {
