@@ -1,10 +1,10 @@
-import { forwardRef } from 'react';
-import { AxesHelper, Object3D } from 'three';
+import { forwardRef } from "react";
+import { AxesHelper, Object3D } from "three";
 
 const Player = forwardRef<Object3D>((_, ref) => {
   return (
     <mesh ref={ref}>
-      <primitive object={new AxesHelper(2)} />
+      {/* <primitive object={new AxesHelper(2)} /> */}
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color="white" />
       {/* 6 mặt */}
@@ -18,5 +18,5 @@ const Player = forwardRef<Object3D>((_, ref) => {
   );
 });
 
-Player.displayName = 'Cube';
+Player.displayName = "Cube";
 export default Player;
