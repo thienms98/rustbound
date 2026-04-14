@@ -22,8 +22,7 @@ import {
 import AttackEffect from "./AttackEffect";
 import { CharacterAction } from "@/types/character";
 const PlayerController = () => {
-  const addStone = useInventory((state) => state.addStone);
-  const addWood = useInventory((state) => state.addWood);
+  const addItem = useInventory((state) => state.addItem);
 
   const playerRef = useRef<Object3D>(null);
   const objectsRef = useRef<Object3D>(null);
@@ -47,15 +46,7 @@ const PlayerController = () => {
         : item
     );
 
-    if (object.userData.hp - 1 <= 0)
-      switch (object.userData.type) {
-        case ResourceType.TREE:
-          addWood();
-          break;
-        case ResourceType.ROCK:
-          addStone();
-          break;
-      }
+    if (object.userData.hp - 1 <= 0) addItem(object.userData.type, 1);
 
     return updatedResources;
   };
@@ -101,8 +92,6 @@ const PlayerController = () => {
 
         statsRef.current.isAttack = false;
         statsRef.current.attackCooldown = ATTACK_TIME;
-
-        console.log(newResources);
       }
     }
 
@@ -134,7 +123,6 @@ const PlayerController = () => {
   return (
     <>
       <Player ref={playerRef} />
-      <AttackEffect ref={playerRef} />
       <Resources ref={objectsRef} targets={targets} resources={resources} />
     </>
   );
