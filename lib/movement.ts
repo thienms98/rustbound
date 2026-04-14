@@ -1,6 +1,6 @@
-import { CharacterStats } from "@/types/character";
-import { RapierRigidBody } from "@react-three/rapier";
-import { Camera, Object3D, Vector2 } from "three";
+import { CharacterStats } from '@/types/character';
+import { RapierRigidBody } from '@react-three/rapier';
+import { Camera, Vector2 } from 'three';
 
 export type Velocity = {
   x: number;
@@ -9,35 +9,27 @@ export type Velocity = {
 
 export const MAX_SPEED = 12;
 export const ACCELERATE = 2;
-export const ROTATE_SPEED = Math.PI / 2;
+export const ROTATE_SPEED = Math.PI / 180;
 
 export const initialStats: CharacterStats = {
   velocity: {
     x: 0,
-    z: 0
+    z: 0,
   },
+  angle: 0,
   isAttack: false,
-  attackCooldown: 0
+  attackCooldown: 0,
 };
 
 export const getDirections = (keys: Set<string>) => {
-  const forward =
-    Number(keys.has("w") || keys.has("arrowup")) -
-    Number(keys.has("s") || keys.has("arrowdown"));
+  const forward = Number(keys.has('w') || keys.has('arrowup')) - Number(keys.has('s') || keys.has('arrowdown'));
 
-  const right =
-    Number(keys.has("d") || keys.has("arrowright")) -
-    Number(keys.has("a") || keys.has("arrowleft"));
+  const right = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
 
   return { forward, right };
 };
 
-export const updateVelocity = (payload: {
-  forward: number;
-  velocity: Velocity;
-  angle: number;
-  delta: number;
-}) => {
+export const updateVelocity = (payload: { forward: number; velocity: Velocity; angle: number; delta: number }) => {
   const { forward, angle, velocity } = payload;
   const dirX = Math.sin(angle);
   const dirZ = Math.cos(angle);
@@ -58,38 +50,40 @@ export const updateVelocity = (payload: {
   velocity.z *= 0.9;
 };
 
-export const updatePosition = ({
-  player,
-  velocity
-}: {
-  player: RapierRigidBody;
-  delta: number;
-  forward: number;
-  right: number;
-  velocity: { x: number; z: number };
-}) => {
+export const updatePosition = ({ player, velocity }: { player: RapierRigidBody; delta: number; forward: number; right: number; velocity: { x: number; z: number } }) => {
   player.setLinvel(
     {
       x: velocity.x,
       y: player.linvel().y,
-      z: velocity.z
+      z: velocity.z,
     },
-    true
+    true,
   );
+};
+
+export const updateRotation = (player: RapierRigidBody, angle: number, right: number) => {
+  angle -= ROTATE_SPEED * right;
+  player.setRotation(
+    {
+      x: 0,
+      y: Math.sin(angle / 2),
+      z: 0,
+      w: Math.cos(angle / 2),
+    },
+    true,
+  );
+
+  return angle;
 };
 
 const CAMERA_SMOOTH = 0.05;
 const CAMERA_OFFSET = {
   x: 30,
   y: 12,
-  z: 30
+  z: 30,
 };
 
-export const updateCameraPosition = (payload: {
-  player: RapierRigidBody;
-  camera: Camera;
-  angle: number;
-}) => {
+export const updateCameraPosition = (payload: { player: RapierRigidBody; camera: Camera; angle: number }) => {
   const { player, camera, angle } = payload;
 
   const position = player.translation();

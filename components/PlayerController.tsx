@@ -1,25 +1,14 @@
-import Player from "./Object3D/Player";
-import Resources, { type Resource } from "./Object3D/Resources";
-import {
-  initialStats,
-  updateCameraPosition,
-  updatePosition,
-  updateVelocity,
-  getDirections
-} from "@/lib/movement";
-import { useFrame } from "@react-three/fiber";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Object3D, Raycaster } from "three";
-import { useInventory } from "@/store/inventory";
-import { getRaycastedObjects } from "@/lib/raycaster";
-import {
-  getCloseIntersects,
-  getRespawnResource,
-  initialSpawn,
-  ResourceType
-} from "@/lib/resource";
-import { CharacterAction } from "@/types/character";
-import { RapierRigidBody } from "@react-three/rapier";
+import Player from './Object3D/Player';
+import Resources, { type Resource } from './Object3D/Resources';
+import { initialStats, updateCameraPosition, updatePosition, updateVelocity, getDirections, updateRotation } from '@/lib/movement';
+import { useFrame } from '@react-three/fiber';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Object3D, Raycaster } from 'three';
+import { useInventory } from '@/store/inventory';
+import { getRaycastedObjects } from '@/lib/raycaster';
+import { getCloseIntersects, getRespawnResource, initialSpawn, ResourceType } from '@/lib/resource';
+import { CharacterAction } from '@/types/character';
+import { RapierRigidBody } from '@react-three/rapier';
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -28,7 +17,6 @@ const PlayerController = () => {
   const objectsRef = useRef<RapierRigidBody>(null);
   const statsRef = useRef(initialStats);
   const keysRef = useRef<Set<string>>(new Set());
-  const angleRef = useRef(0);
 
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
@@ -43,9 +31,9 @@ const PlayerController = () => {
             ...item,
             hp: Math.max(item.hp - 1, 0),
             alive: Boolean(Math.max(item.hp - 1, 0)),
-            respawnAt: Date.now() + 10000
+            respawnAt: Date.now() + 10000,
           }
-        : item
+        : item,
     );
 
     if (object.userData.hp - 1 <= 0) addItem(object.userData.type, 1);
@@ -59,34 +47,23 @@ const PlayerController = () => {
     const { forward, right } = getDirections(keysRef.current);
     const payload = {
       player: playerRef.current,
+      velocity: statsRef.current.velocity,
+      angle: statsRef.current.angle,
       delta,
       camera,
       forward,
       right,
-      velocity: statsRef.current.velocity,
-      angle: angleRef.current
     };
-
-    angleRef.current -= (Math.PI / 90) * right;
-    playerRef.current.setRotation(
-      {
-        x: 0,
-        y: Math.sin(angleRef.current / 2),
-        z: 0,
-        w: Math.cos(angleRef.current / 2)
-      },
-      true
-    );
-
+    statsRef.current.angle = updateRotation(playerRef.current, statsRef.current.angle, right);
     updateVelocity(payload);
     updatePosition(payload);
+    updateCameraPosition(payload);
+
     // statsRef.current.attackCooldown -= delta;
     // statsRef.current.attackCooldown = Math.max(
     //   statsRef.current.attackCooldown,
     //   0
     // );
-
-    updateCameraPosition(payload);
 
     // let newResources = [...resources];
 
@@ -94,7 +71,8 @@ const PlayerController = () => {
     //   const intersects = getRaycastedObjects({
     //     character: playerRef.current,
     //     objects: [objectsRef.current],
-    //     raycaster: raycasterRef.current
+    //     raycaster: raycasterRef.current,
+    //     stats: statsRef.current,
     //   });
 
     //   setTargets(getCloseIntersects(playerRef.current, intersects));
@@ -125,12 +103,12 @@ const PlayerController = () => {
       keysRef.current.delete(e.key.toLowerCase());
     };
 
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("keyup", onKeyUp);
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("keyup", onKeyUp);
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
     };
   }, []);
 
