@@ -1,4 +1,4 @@
-import { Resource } from "@/components/Resources";
+import { Resource } from "@/components/Object3D/Resources";
 import { Intersection, Object3D, Vector3 } from "three";
 import { v4 } from "uuid";
 

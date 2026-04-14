@@ -9,8 +9,6 @@ export type Velocity = {
 };
 
 export interface CharacterStats {
-  direction: DIRECTION;
-  rotation: ROTATION;
   velocity: {
     x: number;
     z: number;

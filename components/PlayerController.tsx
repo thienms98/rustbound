@@ -1,13 +1,12 @@
 import Player from "./Object3D/Player";
-import Resources, { Resource } from "./Resources";
+import Resources, { type Resource } from "./Object3D/Resources";
 import {
   initialStats,
   updateCameraPosition,
   updatePosition,
-  updateVelocity
+  updateVelocity,
+  getDirections
 } from "@/lib/movement";
-import { getInputClearState, getInputState } from "@/lib/keyboard";
-import { ATTACK_TIME, handleAttack } from "@/lib/attack";
 import { useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Object3D, Raycaster } from "three";
@@ -19,14 +18,17 @@ import {
   initialSpawn,
   ResourceType
 } from "@/lib/resource";
-import AttackEffect from "./AttackEffect";
 import { CharacterAction } from "@/types/character";
+import { RapierRigidBody } from "@react-three/rapier";
+
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
 
-  const playerRef = useRef<Object3D>(null);
-  const objectsRef = useRef<Object3D>(null);
+  const playerRef = useRef<RapierRigidBody>(null);
+  const objectsRef = useRef<RapierRigidBody>(null);
   const statsRef = useRef(initialStats);
+  const keysRef = useRef<Set<string>>(new Set());
+  const angleRef = useRef(0);
 
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
@@ -54,63 +56,75 @@ const PlayerController = () => {
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
 
+    const { forward, right } = getDirections(keysRef.current);
     const payload = {
       player: playerRef.current,
       delta,
       camera,
-      ...statsRef.current
+      forward,
+      right,
+      velocity: statsRef.current.velocity,
+      angle: angleRef.current
     };
+
+    angleRef.current -= (Math.PI / 90) * right;
+    playerRef.current.setRotation(
+      {
+        x: 0,
+        y: Math.sin(angleRef.current / 2),
+        z: 0,
+        w: Math.cos(angleRef.current / 2)
+      },
+      true
+    );
 
     updateVelocity(payload);
     updatePosition(payload);
-    statsRef.current.attackCooldown -= delta;
-    statsRef.current.attackCooldown = Math.max(
-      statsRef.current.attackCooldown,
-      0
-    );
+    // statsRef.current.attackCooldown -= delta;
+    // statsRef.current.attackCooldown = Math.max(
+    //   statsRef.current.attackCooldown,
+    //   0
+    // );
 
     updateCameraPosition(payload);
 
-    let newResources = [...resources];
+    // let newResources = [...resources];
 
-    if (objectsRef.current) {
-      const intersects = getRaycastedObjects({
-        character: playerRef.current,
-        objects: [objectsRef.current],
-        raycaster: raycasterRef.current
-      });
+    // if (objectsRef.current) {
+    //   const intersects = getRaycastedObjects({
+    //     character: playerRef.current,
+    //     objects: [objectsRef.current],
+    //     raycaster: raycasterRef.current
+    //   });
 
-      setTargets(getCloseIntersects(playerRef.current, intersects));
+    //   setTargets(getCloseIntersects(playerRef.current, intersects));
 
-      if (statsRef.current.isAttack) {
-        handleAttack({
-          intersects,
-          onHit: (object) => {
-            newResources = handleObjectHit(object, newResources);
-          }
-        });
+    //   if (statsRef.current.isAttack) {
+    //     handleAttack({
+    //       intersects,
+    //       onHit: (object) => {
+    //         newResources = handleObjectHit(object, newResources);
+    //       }
+    //     });
 
-        statsRef.current.isAttack = false;
-        statsRef.current.attackCooldown = ATTACK_TIME;
-      }
-    }
+    //     statsRef.current.isAttack = false;
+    //     statsRef.current.attackCooldown = ATTACK_TIME;
+    //   }
+    // }
 
-    newResources = getRespawnResource(newResources);
-    setResources(newResources);
+    // newResources = getRespawnResource(newResources);
+    // setResources(newResources);
   });
 
-  const onKeyDown = useCallback((e: KeyboardEvent) => {
-    statsRef.current = getInputState(e.key.toLowerCase(), statsRef.current);
-  }, []);
-
-  const onKeyUp = useCallback((e: KeyboardEvent) => {
-    statsRef.current = {
-      ...statsRef.current,
-      ...getInputClearState(e.key.toLowerCase())
-    };
-  }, []);
-
   useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      keysRef.current.add(e.key.toLowerCase());
+    };
+
+    const onKeyUp = (e: KeyboardEvent) => {
+      keysRef.current.delete(e.key.toLowerCase());
+    };
+
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
 
@@ -118,7 +132,7 @@ const PlayerController = () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
     };
-  }, [onKeyDown, onKeyUp]);
+  }, []);
 
   return (
     <>
