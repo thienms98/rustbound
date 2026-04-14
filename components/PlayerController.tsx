@@ -14,7 +14,7 @@ const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
 
   const playerRef = useRef<RapierRigidBody>(null);
-  const objectsRef = useRef<RapierRigidBody>(null);
+  const objectsRef = useRef<Object3D>(null);
   const statsRef = useRef(initialStats);
   const keysRef = useRef<Set<string>>(new Set());
 
@@ -41,7 +41,7 @@ const PlayerController = () => {
     return updatedResources;
   };
 
-  useFrame(({ camera }, delta) => {
+  useFrame(({ camera, scene }, delta) => {
     if (!playerRef.current) return;
 
     const { forward, right } = getDirections(keysRef.current);
@@ -59,6 +59,12 @@ const PlayerController = () => {
     updatePosition(payload);
     updateCameraPosition(payload);
 
+    if (keysRef.current.has('c')) {
+      console.log(scene.children);
+      console.log(scene.children.filter((n) => n.name === 'character'));
+      console.log(scene.children.filter((n) => n.name === 'resource'));
+    }
+
     // statsRef.current.attackCooldown -= delta;
     // statsRef.current.attackCooldown = Math.max(
     //   statsRef.current.attackCooldown,
@@ -67,28 +73,26 @@ const PlayerController = () => {
 
     // let newResources = [...resources];
 
-    // if (objectsRef.current) {
-    //   const intersects = getRaycastedObjects({
-    //     character: playerRef.current,
-    //     objects: [objectsRef.current],
-    //     raycaster: raycasterRef.current,
-    //     stats: statsRef.current,
-    //   });
-
-    //   setTargets(getCloseIntersects(playerRef.current, intersects));
-
-    //   if (statsRef.current.isAttack) {
-    //     handleAttack({
-    //       intersects,
-    //       onHit: (object) => {
-    //         newResources = handleObjectHit(object, newResources);
-    //       }
-    //     });
-
-    //     statsRef.current.isAttack = false;
-    //     statsRef.current.attackCooldown = ATTACK_TIME;
-    //   }
-    // }
+    if (objectsRef.current) {
+      // const objects =
+      // const intersects = getRaycastedObjects({
+      //   character: playerRef.current,
+      //   objects: [objectsRef.current],
+      //   raycaster: raycasterRef.current,
+      //   stats: statsRef.current,
+      // });
+      //   setTargets(getCloseIntersects(playerRef.current, intersects));
+      //   if (statsRef.current.isAttack) {
+      //     handleAttack({
+      //       intersects,
+      //       onHit: (object) => {
+      //         newResources = handleObjectHit(object, newResources);
+      //       }
+      //     });
+      //     statsRef.current.isAttack = false;
+      //     statsRef.current.attackCooldown = ATTACK_TIME;
+      //   }
+    }
 
     // newResources = getRespawnResource(newResources);
     // setResources(newResources);
@@ -97,6 +101,7 @@ const PlayerController = () => {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       keysRef.current.add(e.key.toLowerCase());
+      console.log(keysRef.current);
     };
 
     const onKeyUp = (e: KeyboardEvent) => {

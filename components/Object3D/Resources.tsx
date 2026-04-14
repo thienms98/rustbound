@@ -2,7 +2,7 @@ import { ResourceType } from '@/lib/resource';
 import { Html } from '@react-three/drei';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { forwardRef } from 'react';
-import { Vector3 } from 'three';
+import { Object3D, Vector3 } from 'three';
 
 interface Props {
   targets: string[];
@@ -20,15 +20,15 @@ export interface Resource {
   respawnAt?: number;
 }
 
-const Resources = forwardRef<RapierRigidBody, Props>(({ targets, resources }, ref) => {
+const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
   return (
-    <RigidBody ref={ref} type="fixed" colliders="cuboid" restitution={0} friction={1}>
-      <group>
-        {resources.map(
-          (item) =>
-            item.alive && (
+    <group ref={ref}>
+      {resources.map(
+        (item) =>
+          item.alive && (
+            <RigidBody type="fixed" colliders="cuboid" restitution={0} friction={1} key={item.id}>
               <mesh
-                key={item.id}
+                name="resource"
                 position={item.position}
                 userData={{
                   id: item.id,
@@ -46,10 +46,10 @@ const Resources = forwardRef<RapierRigidBody, Props>(({ targets, resources }, re
                   </Html>
                 )}
               </mesh>
-            ),
-        )}
-      </group>
-    </RigidBody>
+            </RigidBody>
+          ),
+      )}
+    </group>
   );
 });
 

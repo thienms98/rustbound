@@ -5,7 +5,7 @@ const Player = forwardRef<RapierRigidBody>((_, ref) => {
   return (
     <>
       <RigidBody ref={ref} colliders={'cuboid'} restitution={0} friction={1}>
-        <mesh>
+        <mesh name="player">
           {/* <primitive object={new AxesHelper(2)} /> */}
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color="white" />
