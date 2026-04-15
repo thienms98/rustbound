@@ -44,3 +44,6 @@
 - GitHub repo
 - Demo video
 - README
+
+assets:
+https://kaylousberg.itch.io/kaykit-adventurers

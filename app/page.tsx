@@ -2,7 +2,7 @@
 
 import Floor from "@/components/Object3D/Floor";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import PlayerController from "@/components/PlayerController";
 import Inventory from "@/components/Inventory";
@@ -21,7 +21,10 @@ export default function Home() {
 
         <ambientLight />
         <spotLight />
-        {/* <OrbitControls /> */}
+
+        <Environment preset="dawn" background />
+
+        <OrbitControls />
       </Canvas>
       <Inventory />
     </main>

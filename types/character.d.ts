@@ -14,7 +14,6 @@ export interface CharacterStats {
     z: number;
   };
   angle: number;
-  isAttack: boolean;
   attackCooldown: number;
 }
 
