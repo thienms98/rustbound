@@ -1,32 +1,34 @@
 import Player from "./Object3D/Player";
-import Resources, { Resource } from "./Resources";
+import Resources, { type Resource } from "./Object3D/Resources";
 import {
   initialStats,
   updateCameraPosition,
   updatePosition,
-  updateVelocity
+  updateVelocity,
+  getDirections,
+  updateRotation
 } from "@/lib/movement";
-import { getInputClearState, getInputState } from "@/lib/keyboard";
-import { ATTACK_TIME, handleAttack } from "@/lib/attack";
 import { useFrame } from "@react-three/fiber";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Object3D, Raycaster } from "three";
 import { useInventory } from "@/store/inventory";
-import { getRaycastedObjects } from "@/lib/raycaster";
+import { getRaycastedIntersects } from "@/lib/raycaster";
 import {
   getCloseIntersects,
   getRespawnResource,
-  initialSpawn,
-  ResourceType
+  initialSpawn
 } from "@/lib/resource";
-import AttackEffect from "./AttackEffect";
 import { CharacterAction } from "@/types/character";
+import { RapierRigidBody } from "@react-three/rapier";
+import { ATTACK_TIME, handleAttack } from "@/lib/attack";
+
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
 
-  const playerRef = useRef<Object3D>(null);
+  const playerRef = useRef<RapierRigidBody>(null);
   const objectsRef = useRef<Object3D>(null);
   const statsRef = useRef(initialStats);
+  const keysRef = useRef<Set<string>>(new Set());
 
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
@@ -54,43 +56,46 @@ const PlayerController = () => {
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
 
+    const { forward, right } = getDirections(keysRef.current);
     const payload = {
       player: playerRef.current,
+      velocity: statsRef.current.velocity,
+      angle: statsRef.current.angle,
+      objects: objectsRef.current ? objectsRef.current.children : [],
+      raycaster: raycasterRef.current,
       delta,
       camera,
-      ...statsRef.current
+      forward,
+      right
     };
-
+    statsRef.current.angle = updateRotation(
+      playerRef.current,
+      statsRef.current.angle,
+      right
+    );
     updateVelocity(payload);
     updatePosition(payload);
+    updateCameraPosition(payload);
+
     statsRef.current.attackCooldown -= delta;
     statsRef.current.attackCooldown = Math.max(
       statsRef.current.attackCooldown,
       0
     );
 
-    updateCameraPosition(payload);
-
     let newResources = [...resources];
 
     if (objectsRef.current) {
-      const intersects = getRaycastedObjects({
-        character: playerRef.current,
-        objects: [objectsRef.current],
-        raycaster: raycasterRef.current
-      });
+      const intersects = getRaycastedIntersects(payload);
 
       setTargets(getCloseIntersects(playerRef.current, intersects));
-
-      if (statsRef.current.isAttack) {
+      if (keysRef.current.has("e") && statsRef.current.attackCooldown === 0) {
         handleAttack({
           intersects,
           onHit: (object) => {
             newResources = handleObjectHit(object, newResources);
           }
         });
-
-        statsRef.current.isAttack = false;
         statsRef.current.attackCooldown = ATTACK_TIME;
       }
     }
@@ -99,18 +104,15 @@ const PlayerController = () => {
     setResources(newResources);
   });
 
-  const onKeyDown = useCallback((e: KeyboardEvent) => {
-    statsRef.current = getInputState(e.key.toLowerCase(), statsRef.current);
-  }, []);
-
-  const onKeyUp = useCallback((e: KeyboardEvent) => {
-    statsRef.current = {
-      ...statsRef.current,
-      ...getInputClearState(e.key.toLowerCase())
-    };
-  }, []);
-
   useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      keysRef.current.add(e.key.toLowerCase());
+    };
+
+    const onKeyUp = (e: KeyboardEvent) => {
+      keysRef.current.delete(e.key.toLowerCase());
+    };
+
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
 
@@ -118,7 +120,7 @@ const PlayerController = () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
     };
-  }, [onKeyDown, onKeyUp]);
+  }, []);
 
   return (
     <>

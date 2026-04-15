@@ -1,5 +1,6 @@
 import { CharacterStats } from "@/types/character";
-import { Camera, Object3D, Vector2 } from "three";
+import { RapierRigidBody } from "@react-three/rapier";
+import { Camera, Vector2 } from "three";
 
 export type Velocity = {
   x: number;
@@ -8,29 +9,41 @@ export type Velocity = {
 
 export const MAX_SPEED = 12;
 export const ACCELERATE = 2;
-export const ROTATE_SPEED = Math.PI / 2;
+export const ROTATE_SPEED = Math.PI / 180;
 
 export const initialStats: CharacterStats = {
-  direction: 0,
-  rotation: 0,
   velocity: {
     x: 0,
     z: 0
   },
-  isAttack: false,
+  angle: 0,
   attackCooldown: 0
 };
 
-export const updateVelocity = (
-  payload: CharacterStats & { player: Object3D; delta: number }
-) => {
-  const { direction, player, velocity } = payload;
-  const angle = player.rotation.y;
+export const getDirections = (keys: Set<string>) => {
+  const forward =
+    Number(keys.has("w") || keys.has("arrowup")) -
+    Number(keys.has("s") || keys.has("arrowdown"));
+
+  const right =
+    Number(keys.has("d") || keys.has("arrowright")) -
+    Number(keys.has("a") || keys.has("arrowleft"));
+
+  return { forward, right };
+};
+
+export const updateVelocity = (payload: {
+  forward: number;
+  velocity: Velocity;
+  angle: number;
+  delta: number;
+}) => {
+  const { forward, angle, velocity } = payload;
   const dirX = Math.sin(angle);
   const dirZ = Math.cos(angle);
 
-  velocity.x += dirX * ACCELERATE * direction;
-  velocity.z += dirZ * ACCELERATE * direction;
+  velocity.x += dirX * ACCELERATE * forward;
+  velocity.z += dirZ * ACCELERATE * forward;
 
   const vec = new Vector2(velocity.x, velocity.z);
 
@@ -47,14 +60,41 @@ export const updateVelocity = (
 
 export const updatePosition = ({
   player,
-  delta,
-  rotation,
   velocity
-}: { player: Object3D; delta: number } & CharacterStats) => {
-  player.position.x += velocity.x * delta;
-  player.position.z += velocity.z * delta;
+}: {
+  player: RapierRigidBody;
+  delta: number;
+  forward: number;
+  right: number;
+  velocity: { x: number; z: number };
+}) => {
+  player.setLinvel(
+    {
+      x: velocity.x,
+      y: player.linvel().y,
+      z: velocity.z
+    },
+    true
+  );
+};
 
-  player.rotation.y += delta * ROTATE_SPEED * rotation;
+export const updateRotation = (
+  player: RapierRigidBody,
+  angle: number,
+  right: number
+) => {
+  angle -= ROTATE_SPEED * right;
+  player.setRotation(
+    {
+      x: 0,
+      y: Math.sin(angle / 2),
+      z: 0,
+      w: Math.cos(angle / 2)
+    },
+    true
+  );
+
+  return angle;
 };
 
 const CAMERA_SMOOTH = 0.05;
@@ -64,26 +104,26 @@ const CAMERA_OFFSET = {
   z: 30
 };
 
-export const updateCameraPosition = (
-  payload: {
-    player: Object3D;
-    camera: Camera;
-  } & CharacterStats
-) => {
-  const { player, camera } = payload;
-  const angle = player.rotation.y;
+export const updateCameraPosition = (payload: {
+  player: RapierRigidBody;
+  camera: Camera;
+  angle: number;
+}) => {
+  const { player, camera, angle } = payload;
+
+  const position = player.translation();
   const dirX = Math.sin(angle);
   const dirZ = Math.cos(angle);
 
   // camera always follow up character
-  const targetX = player.position.x - dirX * CAMERA_OFFSET.x;
-  const targetY = player.position.y + CAMERA_OFFSET.y;
-  const targetZ = player.position.z - dirZ * CAMERA_OFFSET.z;
+  const targetX = position.x - dirX * CAMERA_OFFSET.x;
+  const targetY = position.y + CAMERA_OFFSET.y;
+  const targetZ = position.z - dirZ * CAMERA_OFFSET.z;
 
   // delay to make camera smoother
   camera.position.x += (targetX - camera.position.x) * CAMERA_SMOOTH;
   camera.position.y += (targetY - camera.position.y) * CAMERA_SMOOTH;
   camera.position.z += (targetZ - camera.position.z) * CAMERA_SMOOTH;
 
-  camera.lookAt(player.position);
+  camera.lookAt(position.x, position.y, position.z);
 };

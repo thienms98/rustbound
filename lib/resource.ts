@@ -1,6 +1,8 @@
-import { Resource } from "@/components/Resources";
+import { Resource } from "@/components/Object3D/Resources";
 import { Intersection, Object3D, Vector3 } from "three";
 import { v4 } from "uuid";
+import { getDistance } from "./utils";
+import { RapierRigidBody } from "@react-three/rapier";
 
 export const MINIMUM_DISTANCE = 5;
 export const MAX_HP = 5;
@@ -21,13 +23,6 @@ const restrictedAreas = {
     [20, 50],
     [10, 40]
   ]
-};
-
-export const getDistance = (aPosition: Vector3, bPosition: Vector3) => {
-  return Math.sqrt(
-    Math.pow(aPosition.x - bPosition.x, 2) +
-      Math.pow(aPosition.z - bPosition.z, 2)
-  );
 };
 
 export const initialSpawn = (resources: Resource[] = []) => {
@@ -122,13 +117,16 @@ export const getRandomPosition = (
 };
 
 export const getCloseIntersects = (
-  char: Object3D,
+  char: RapierRigidBody,
   intersects: Intersection<Object3D>[],
   distance = HP_MIN_DISTANCE
 ) => {
+  const { x, y, z } = char.translation();
+
   return intersects
     .filter(
-      (item) => getDistance(item.object.position, char.position) < distance
+      (item) =>
+        getDistance(item.object.position, new Vector3(x, y, z)) < distance
     )
     .map((i) => i.object.userData.id);
 };

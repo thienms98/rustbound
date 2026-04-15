@@ -1,11 +1,14 @@
+import { RigidBody } from "@react-three/rapier";
+
 const Floor = () => {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-      <planeGeometry args={[100, 100]} />
-      {/* <meshStandardMaterial color="gray" /> */}
-      <shaderMaterial
-        side={2}
-        fragmentShader={`
+    <RigidBody type="fixed">
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
+        <planeGeometry args={[100, 100]} />
+        {/* <meshStandardMaterial color="gray" /> */}
+        <shaderMaterial
+          side={2}
+          fragmentShader={`
           varying vec2 vUv;
           void main() {
             float scale = 20.0;
@@ -15,15 +18,16 @@ const Floor = () => {
             gl_FragColor = vec4(color, 1.0);
           }
         `}
-        vertexShader={`
+          vertexShader={`
           varying vec2 vUv;
           void main() {
             vUv = uv;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
           }
         `}
-      />
-    </mesh>
+        />
+      </mesh>
+    </RigidBody>
   );
 };
 
