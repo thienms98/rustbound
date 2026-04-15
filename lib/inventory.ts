@@ -15,7 +15,7 @@ export interface InventoryItem {
   order: number;
 }
 
-const MAX_SLOT = 8;
+export const MAX_SLOT = 8;
 
 export const resourceInventoryRules: InventoryRule = {
   [ResourceType.TREE]: {
@@ -79,4 +79,19 @@ export const addNewItemSlot = ({
       return;
     }
   }
+};
+
+export const ASSET_MAP = {
+  [ResourceType.ROCK]: { x: 7, y: 9 },
+  [ResourceType.TREE]: { x: 8, y: 5 }
+};
+export const ASSET_SIZE = 16;
+
+export const getResourceAssetPosition = (type: ResourceType) => {
+  const { x, y } = ASSET_MAP[type];
+
+  return {
+    x: x * ASSET_SIZE,
+    y: y * ASSET_SIZE
+  };
 };
