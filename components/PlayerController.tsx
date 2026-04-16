@@ -72,7 +72,7 @@ const PlayerController = () => {
       const intersects = getRaycastedIntersects(payload);
 
       setTargets(getCloseIntersects(playerRef.current, intersects));
-      if (keysRef.current.has("e") && statsRef.current.attackCooldown === 0) {
+      if (keysRef.current.has("e") && statsRef.current.attackCooldown <= 0) {
         handleAttack({
           intersects,
           onHit: (object) => {

@@ -28,18 +28,17 @@ export const onObjectHit = (
   resources: Resource[],
   onDead?: (type: ResourceType, quantity: number) => void
 ) => {
-  const updatedResources = resources.map((item) =>
-    item.id === object.userData.id
-      ? {
-          ...item,
-          hp: Math.max(item.hp - 1, 0),
-          alive: Boolean(Math.max(item.hp - 1, 0)),
-          respawnAt: Date.now() + 10000
-        }
-      : item
-  );
+  const newResources = [...resources];
+  const item = resources.find((item) => item.id === object.userData.id);
+  if (!item) return newResources;
 
-  if (object.userData.hp - 1 <= 0 && onDead) onDead(object.userData.type, 1);
+  const newHp = Math.max(item.hp - 1, 0);
 
-  return updatedResources;
+  item.hp = newHp;
+  item.alive = Boolean(newHp);
+  item.respawnAt = Date.now() + 10000;
+
+  if (newHp <= 0 && onDead) onDead(object.userData.type, 1);
+
+  return newResources;
 };
