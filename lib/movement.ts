@@ -51,11 +51,8 @@ export const updateVelocity = (payload: {
     vec.normalize().multiplyScalar(MAX_SPEED);
   }
 
-  velocity.x = vec.x;
-  velocity.z = vec.y;
-
-  velocity.x *= 0.9;
-  velocity.z *= 0.9;
+  velocity.x = vec.x * 0.9;
+  velocity.z = vec.y * 0.9;
 };
 
 export const updatePosition = ({
@@ -99,9 +96,9 @@ export const updateRotation = (
 
 const CAMERA_SMOOTH = 0.05;
 const CAMERA_OFFSET = {
-  x: 30,
-  y: 12,
-  z: 30
+  x: -20,
+  y: 30,
+  z: 100
 };
 
 export const updateCameraPosition = (payload: {
@@ -112,13 +109,11 @@ export const updateCameraPosition = (payload: {
   const { player, camera, angle } = payload;
 
   const position = player.translation();
-  const dirX = Math.sin(angle);
-  const dirZ = Math.cos(angle);
 
   // camera always follow up character
-  const targetX = position.x - dirX * CAMERA_OFFSET.x;
+  const targetX = position.x - CAMERA_OFFSET.x;
   const targetY = position.y + CAMERA_OFFSET.y;
-  const targetZ = position.z - dirZ * CAMERA_OFFSET.z;
+  const targetZ = position.z - CAMERA_OFFSET.z;
 
   // delay to make camera smoother
   camera.position.x += (targetX - camera.position.x) * CAMERA_SMOOTH;

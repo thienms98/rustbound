@@ -1,7 +1,7 @@
 import { Intersection, Object3D } from "three";
 
 export const ATTACK_TIME = 0.5;
-export const ATTACK_RANGE = 3;
+export const ATTACK_RANGE = 6;
 
 interface AttackPayload {
   intersects: Intersection<Object3D>[];

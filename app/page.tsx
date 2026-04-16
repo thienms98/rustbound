@@ -11,9 +11,9 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <main className="w-screen h-screen">
-      <Canvas camera={{ position: [10, 10, 20], fov: 30 }}>
+      <Canvas camera={{ fov: 30 }}>
         <Suspense>
-          <Physics debug>
+          <Physics debug={process.env.NODE_ENV === "development"}>
             <Floor />
             <PlayerController />
           </Physics>
@@ -24,7 +24,7 @@ export default function Home() {
 
         <Environment preset="dawn" background />
 
-        <OrbitControls />
+        {/* <OrbitControls /> */}
       </Canvas>
       <Inventory />
     </main>
