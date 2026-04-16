@@ -21,15 +21,15 @@ export const initialStats: CharacterStats = {
 };
 
 export const getDirections = (keys: Set<string>) => {
-  const forward =
+  const y =
     Number(keys.has("w") || keys.has("arrowup")) -
     Number(keys.has("s") || keys.has("arrowdown"));
 
-  const right =
+  const x =
     Number(keys.has("d") || keys.has("arrowright")) -
     Number(keys.has("a") || keys.has("arrowleft"));
 
-  return { forward, right };
+  return new Vector2(x, y);
 };
 
 export const updateVelocity = (payload: {
@@ -78,15 +78,15 @@ export const updatePosition = ({
 export const updateRotation = (
   player: RapierRigidBody,
   angle: number,
-  right: number
+  horz: number,
+  vert: number
 ) => {
-  angle -= ROTATE_SPEED * right;
   player.setRotation(
     {
       x: 0,
-      y: Math.sin(angle / 2),
+      y: -1,
       z: 0,
-      w: Math.cos(angle / 2)
+      w: 0
     },
     true
   );

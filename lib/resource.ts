@@ -16,8 +16,8 @@ export enum ResourceType {
 
 const restrictedAreas = {
   [ResourceType.TREE]: [
-    [-30, 0],
-    [-30, 0]
+    [-40, -10],
+    [-40, -10]
   ],
   [ResourceType.ROCK]: [
     [20, 50],

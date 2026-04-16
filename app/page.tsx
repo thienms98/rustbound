@@ -13,7 +13,7 @@ export default function Home() {
     <main className="w-screen h-screen">
       <Canvas camera={{ fov: 30 }}>
         <Suspense>
-          <Physics debug={process.env.NODE_ENV === "development"}>
+          <Physics debug>
             <Floor />
             <PlayerController />
           </Physics>

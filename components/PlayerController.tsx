@@ -60,7 +60,7 @@ const PlayerController = () => {
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
 
-    const { forward, right } = getDirections(keysRef.current);
+    const vector = getDirections(keysRef.current);
     const payload = {
       player: playerRef.current,
       velocity: statsRef.current.velocity,
@@ -69,18 +69,17 @@ const PlayerController = () => {
       raycaster: raycasterRef.current,
       delta,
       camera,
-      forward,
-      right
+      vector
     };
     statsRef.current.angle = updateRotation(
       playerRef.current,
       statsRef.current.angle,
-      right
+      vector
     );
-    updateVelocity(payload);
-    updatePosition(payload);
+    // updateVelocity(payload);
+    // updatePosition(payload);
     updateCameraPosition(payload);
-    if (forward) setAnimation("root|Girl_walk");
+    if (horz) setAnimation("root|Girl_walk");
     else setAnimation("root|Girl_Idle");
 
     statsRef.current.attackCooldown -= delta;
