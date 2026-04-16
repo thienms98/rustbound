@@ -34,6 +34,10 @@ const PlayerController = () => {
   const [targets, setTargets] = useState<string[]>([]);
   const [actions, setActions] = useState<CharacterAction[]>([]);
 
+  const [animation, setAnimation] = useState<
+    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
+  >("root|Girl_Idle");
+
   const raycasterRef = useRef(new Raycaster());
 
   const handleObjectHit = (object: Object3D, resources: Resource[]) => {
@@ -76,6 +80,8 @@ const PlayerController = () => {
     updateVelocity(payload);
     updatePosition(payload);
     updateCameraPosition(payload);
+    if (forward) setAnimation("root|Girl_walk");
+    else setAnimation("root|Girl_Idle");
 
     statsRef.current.attackCooldown -= delta;
     statsRef.current.attackCooldown = Math.max(
@@ -124,7 +130,7 @@ const PlayerController = () => {
 
   return (
     <>
-      <Player ref={playerRef} />
+      <Player ref={playerRef} animation={animation} />
       <Resources ref={objectsRef} targets={targets} resources={resources} />
     </>
   );
