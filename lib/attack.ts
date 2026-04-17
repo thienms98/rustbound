@@ -1,6 +1,6 @@
-import { Resource } from "@/components/Object3D/Resources";
-import { Intersection, Object3D } from "three";
-import { ResourceType } from "./resource";
+import { Resource } from '@/components/Object3D/Resources';
+import { Intersection, Object3D } from 'three';
+import { ResourceType } from './resource';
 
 export const ATTACK_TIME = 0.5;
 export const ATTACK_RANGE = 20;
@@ -23,11 +23,7 @@ export const handleAttack = (payload: AttackPayload) => {
   }
 };
 
-export const onObjectHit = (
-  object: Object3D,
-  resources: Resource[],
-  onDead?: (type: ResourceType, quantity: number) => void
-) => {
+export const onObjectHit = (object: Object3D, resources: Resource[], onDead?: (type: ResourceType, quantity: number) => void) => {
   const newResources = [...resources];
   const item = resources.find((item) => item.id === object.userData.id);
   if (!item) return newResources;
@@ -41,4 +37,10 @@ export const onObjectHit = (
   if (newHp <= 0 && onDead) onDead(object.userData.type, 1);
 
   return newResources;
+};
+
+export const handleAttackCooldown = (cooldown: number, decrement: number) => {
+  cooldown -= decrement;
+  cooldown = Math.max(cooldown, 0);
+  return cooldown;
 };
