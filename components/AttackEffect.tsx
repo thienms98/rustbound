@@ -1,7 +1,7 @@
 import { ATTACK_RANGE } from "@/lib/attack";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { Object3D, RingGeometry } from "three";
+import { RingGeometry } from "three";
 
 const AttackEffect = ({}) => {
   const splashRef = useRef<RingGeometry>(null);

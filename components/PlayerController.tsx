@@ -10,7 +10,7 @@ import {
 } from "@/lib/movement";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { Object3D, Raycaster } from "three";
+import { Object3D, Raycaster, Vector2 } from "three";
 import { useInventory } from "@/store/inventory";
 import { getRaycastedIntersects } from "@/lib/raycaster";
 import {
@@ -34,12 +34,17 @@ const PlayerController = () => {
   const [targets, setTargets] = useState<string[]>([]);
   const [actions, setActions] = useState<CharacterAction[]>([]);
 
+  const [animation, setAnimation] = useState<
+    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
+  >("root|Girl_Idle");
+
   const raycasterRef = useRef(new Raycaster());
 
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
 
-    const { forward, right } = getDirections(keysRef.current);
+    const direction = getDirections(keysRef.current);
+    const isSprint = keysRef.current.has("shift");
     const payload = {
       player: playerRef.current,
       velocity: statsRef.current.velocity,
@@ -48,17 +53,17 @@ const PlayerController = () => {
       raycaster: raycasterRef.current,
       delta,
       camera,
-      forward,
-      right
+      vector: direction
     };
-    statsRef.current.angle = updateRotation(
-      playerRef.current,
-      statsRef.current.angle,
-      right
-    );
-    updateVelocity(payload);
-    updatePosition(payload);
+
+    updateRotation(playerRef.current, direction);
+    updatePosition(playerRef.current, direction, isSprint);
     updateCameraPosition(payload);
+
+    if (direction.x || direction.y) {
+      if (isSprint) setAnimation("root|Girl_run");
+      else setAnimation("root|Girl_walk");
+    } else setAnimation("root|Girl_Idle");
 
     statsRef.current.attackCooldown -= delta;
     statsRef.current.attackCooldown = Math.max(
@@ -89,6 +94,10 @@ const PlayerController = () => {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      // if (playerRef.current) {
+      //   updatePosition(playerRef.current, new Vector2(0, 1), 20);
+      //   console.log(playerRef.current.translation());
+      // }
       keysRef.current.add(e.key.toLowerCase());
     };
 
@@ -107,8 +116,8 @@ const PlayerController = () => {
 
   return (
     <>
-      <Player ref={playerRef} />
-      <Resources ref={objectsRef} targets={targets} resources={resources} />
+      <Player ref={playerRef} animation={animation} />
+      {/* <Resources ref={objectsRef} targets={targets} resources={resources} /> */}
     </>
   );
 };

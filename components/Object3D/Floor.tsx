@@ -4,8 +4,7 @@ const Floor = () => {
   return (
     <RigidBody type="fixed">
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-        <planeGeometry args={[100, 100]} />
-        {/* <meshStandardMaterial color="gray" /> */}
+        <planeGeometry args={[300, 300]} />
         <shaderMaterial
           side={2}
           fragmentShader={`
