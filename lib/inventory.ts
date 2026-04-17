@@ -15,7 +15,7 @@ export interface InventoryItem {
   order: number;
 }
 
-const MAX_SLOT = 8;
+export const MAX_SLOT = 8;
 
 export const resourceInventoryRules: InventoryRule = {
   [ResourceType.TREE]: {
@@ -79,4 +79,55 @@ export const addNewItemSlot = ({
       return;
     }
   }
+};
+
+export const swapInventoryItem = ({
+  items,
+  source,
+  target
+}: {
+  items: InventoryItem[];
+  source: InventoryItem;
+  target: InventoryItem;
+}) => {
+  if (source.type === target.type) {
+    const { maxStacks } = resourceInventoryRules[target.type];
+    const newTargetQty = Math.min(maxStacks, target.quantity + source.quantity);
+    const newSourceQty = source.quantity - (newTargetQty - target.quantity);
+
+    return [...items].map((item) => ({
+      ...item,
+      quantity:
+        item.id === target.id
+          ? newTargetQty
+          : item.id === source.id
+            ? newSourceQty
+            : item.quantity
+    }));
+  }
+
+  return [...items].map((item) => ({
+    ...item,
+    order:
+      item.id === target.id
+        ? target.order
+        : item.id === source.id
+          ? source.order
+          : item.order
+  }));
+};
+
+export const ASSET_MAP = {
+  [ResourceType.ROCK]: { x: 7, y: 9 },
+  [ResourceType.TREE]: { x: 8, y: 5 }
+};
+export const ASSET_SIZE = 16;
+
+export const getResourceAssetPosition = (type: ResourceType) => {
+  const { x, y } = ASSET_MAP[type];
+
+  return {
+    x: x * ASSET_SIZE,
+    y: y * ASSET_SIZE
+  };
 };

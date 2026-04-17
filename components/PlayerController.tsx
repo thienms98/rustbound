@@ -20,7 +20,7 @@ import {
 } from "@/lib/resource";
 import { CharacterAction } from "@/types/character";
 import { RapierRigidBody } from "@react-three/rapier";
-import { ATTACK_TIME, handleAttack } from "@/lib/attack";
+import { ATTACK_TIME, handleAttack, onObjectHit } from "@/lib/attack";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -39,23 +39,6 @@ const PlayerController = () => {
   >("root|Girl_Idle");
 
   const raycasterRef = useRef(new Raycaster());
-
-  const handleObjectHit = (object: Object3D, resources: Resource[]) => {
-    const updatedResources = resources.map((item) =>
-      item.id === object.userData.id
-        ? {
-            ...item,
-            hp: Math.max(item.hp - 1, 0),
-            alive: Boolean(Math.max(item.hp - 1, 0)),
-            respawnAt: Date.now() + 10000
-          }
-        : item
-    );
-
-    if (object.userData.hp - 1 <= 0) addItem(object.userData.type, 1);
-
-    return updatedResources;
-  };
 
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
@@ -94,11 +77,11 @@ const PlayerController = () => {
       const intersects = getRaycastedIntersects(payload);
 
       setTargets(getCloseIntersects(playerRef.current, intersects));
-      if (keysRef.current.has("e") && statsRef.current.attackCooldown === 0) {
+      if (keysRef.current.has("e") && statsRef.current.attackCooldown <= 0) {
         handleAttack({
           intersects,
           onHit: (object) => {
-            newResources = handleObjectHit(object, newResources);
+            newResources = onObjectHit(object, newResources, addItem);
           }
         });
         statsRef.current.attackCooldown = ATTACK_TIME;
