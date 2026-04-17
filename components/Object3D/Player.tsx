@@ -26,7 +26,7 @@ const Player = forwardRef<RapierRigidBody, { animation: string }>(
           linearDamping={5}
           angularDamping={10}
         >
-          <primitive object={scene} position={[0, 4, 0]} />
+          <primitive object={scene} position={[0, 0, 0]} />
         </RigidBody>
       </>
     );

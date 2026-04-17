@@ -13,11 +13,6 @@ export const SPRINT_SPEED = 10;
 export const ROTATE_SPEED = Math.PI / 180;
 
 export const initialStats: CharacterStats = {
-  velocity: {
-    x: 0,
-    z: 0
-  },
-  angle: 0,
   attackCooldown: 0
 };
 

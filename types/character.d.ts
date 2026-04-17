@@ -9,11 +9,6 @@ export type Velocity = {
 };
 
 export interface CharacterStats {
-  velocity: {
-    x: number;
-    z: number;
-  };
-  angle: number;
   attackCooldown: number;
 }
 

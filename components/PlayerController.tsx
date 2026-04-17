@@ -46,8 +46,6 @@ const PlayerController = () => {
     const isSprint = keysRef.current.has("shift");
     const payload = {
       player: playerRef.current,
-      velocity: statsRef.current.velocity,
-      angle: statsRef.current.angle,
       objects: objectsRef.current ? objectsRef.current.children : [],
       raycaster: raycasterRef.current,
       delta,
