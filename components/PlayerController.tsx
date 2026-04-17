@@ -1,15 +1,26 @@
-import Player from './Object3D/Player';
-import Resources, { type Resource } from './Object3D/Resources';
-import { initialStats, updateCameraPosition, updatePosition, updateVelocity, getDirections, updateRotation } from '@/lib/movement';
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
-import { Object3D, Raycaster, Vector2 } from 'three';
-import { useInventory } from '@/store/inventory';
-import { getRaycastedIntersects } from '@/lib/raycaster';
-import { getCloseIntersects, getRespawnResource, initialSpawn } from '@/lib/resource';
-import { CharacterAction } from '@/types/character';
-import { RapierRigidBody } from '@react-three/rapier';
-import { ATTACK_TIME, handleAttack } from '@/lib/attack';
+import Player from "./Object3D/Player";
+import Resources, { type Resource } from "./Object3D/Resources";
+import {
+  initialStats,
+  updateCameraPosition,
+  updatePosition,
+  updateVelocity,
+  getDirections,
+  updateRotation
+} from "@/lib/movement";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Object3D, Raycaster, Vector2 } from "three";
+import { useInventory } from "@/store/inventory";
+import { getRaycastedIntersects } from "@/lib/raycaster";
+import {
+  getCloseIntersects,
+  getRespawnResource,
+  initialSpawn
+} from "@/lib/resource";
+import { CharacterAction } from "@/types/character";
+import { RapierRigidBody } from "@react-three/rapier";
+import { ATTACK_TIME, handleAttack } from "@/lib/attack";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -23,7 +34,9 @@ const PlayerController = () => {
   const [targets, setTargets] = useState<string[]>([]);
   const [actions, setActions] = useState<CharacterAction[]>([]);
 
-  const [animation, setAnimation] = useState<'root|Girl_Idle' | 'root|Girl_walk' | 'root|Girl_run'>('root|Girl_Idle');
+  const [animation, setAnimation] = useState<
+    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
+  >("root|Girl_Idle");
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -34,9 +47,9 @@ const PlayerController = () => {
             ...item,
             hp: Math.max(item.hp - 1, 0),
             alive: Boolean(Math.max(item.hp - 1, 0)),
-            respawnAt: Date.now() + 10000,
+            respawnAt: Date.now() + 10000
           }
-        : item,
+        : item
     );
 
     if (object.userData.hp - 1 <= 0) addItem(object.userData.type, 1);
@@ -48,6 +61,7 @@ const PlayerController = () => {
     if (!playerRef.current) return;
 
     const direction = getDirections(keysRef.current);
+    const isSprint = keysRef.current.has("shift");
     const payload = {
       player: playerRef.current,
       velocity: statsRef.current.velocity,
@@ -56,20 +70,23 @@ const PlayerController = () => {
       raycaster: raycasterRef.current,
       delta,
       camera,
-      vector: direction,
+      vector: direction
     };
 
     updateRotation(playerRef.current, direction);
-    updatePosition(playerRef.current, direction, delta);
-    // updateVelocity(payload);
+    updatePosition(playerRef.current, direction, isSprint);
     updateCameraPosition(payload);
+
     if (direction.x || direction.y) {
-      if (keysRef.current.has('shift')) setAnimation('root|Girl_run');
-      else setAnimation('root|Girl_walk');
-    } else setAnimation('root|Girl_Idle');
+      if (isSprint) setAnimation("root|Girl_run");
+      else setAnimation("root|Girl_walk");
+    } else setAnimation("root|Girl_Idle");
 
     statsRef.current.attackCooldown -= delta;
-    statsRef.current.attackCooldown = Math.max(statsRef.current.attackCooldown, 0);
+    statsRef.current.attackCooldown = Math.max(
+      statsRef.current.attackCooldown,
+      0
+    );
 
     let newResources = [...resources];
 
@@ -77,12 +94,12 @@ const PlayerController = () => {
       const intersects = getRaycastedIntersects(payload);
 
       setTargets(getCloseIntersects(playerRef.current, intersects));
-      if (keysRef.current.has('e') && statsRef.current.attackCooldown === 0) {
+      if (keysRef.current.has("e") && statsRef.current.attackCooldown === 0) {
         handleAttack({
           intersects,
           onHit: (object) => {
             newResources = handleObjectHit(object, newResources);
-          },
+          }
         });
         statsRef.current.attackCooldown = ATTACK_TIME;
       }
@@ -105,19 +122,19 @@ const PlayerController = () => {
       keysRef.current.delete(e.key.toLowerCase());
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, []);
 
   return (
     <>
       <Player ref={playerRef} animation={animation} />
-      <Resources ref={objectsRef} targets={targets} resources={resources} />
+      {/* <Resources ref={objectsRef} targets={targets} resources={resources} /> */}
     </>
   );
 };

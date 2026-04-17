@@ -13,7 +13,7 @@ export default function Home() {
     <main className="w-screen h-screen">
       <Canvas camera={{ fov: 30 }}>
         <Suspense>
-          <Physics debug>
+          <Physics>
             <Floor />
             <PlayerController />
           </Physics>
@@ -24,7 +24,7 @@ export default function Home() {
 
         <Environment preset="dawn" background />
 
-        {/* <OrbitControls /> */}
+        <OrbitControls />
       </Canvas>
       <Inventory />
     </main>
