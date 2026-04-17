@@ -4,13 +4,12 @@ import {
   initialStats,
   updateCameraPosition,
   updatePosition,
-  updateVelocity,
   getDirections,
   updateRotation
 } from "@/lib/movement";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { Object3D, Raycaster, Vector2 } from "three";
+import { Object3D, Raycaster } from "three";
 import { useInventory } from "@/store/inventory";
 import { getRaycastedIntersects } from "@/lib/raycaster";
 import {
@@ -94,10 +93,6 @@ const PlayerController = () => {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      // if (playerRef.current) {
-      //   updatePosition(playerRef.current, new Vector2(0, 1), 20);
-      //   console.log(playerRef.current.translation());
-      // }
       keysRef.current.add(e.key.toLowerCase());
     };
 
@@ -117,7 +112,7 @@ const PlayerController = () => {
   return (
     <>
       <Player ref={playerRef} animation={animation} />
-      {/* <Resources ref={objectsRef} targets={targets} resources={resources} /> */}
+      <Resources ref={objectsRef} targets={targets} resources={resources} />
     </>
   );
 };

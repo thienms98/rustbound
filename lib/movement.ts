@@ -66,29 +66,6 @@ export const updatePosition = (
   );
 };
 
-export const updateVelocity = (payload: {
-  forward: number;
-  velocity: Velocity;
-  angle: number;
-  delta: number;
-}) => {
-  const { forward, angle, velocity } = payload;
-  const dirX = Math.sin(angle);
-  const dirZ = Math.cos(angle);
-
-  velocity.x += dirX * MOVEMENT_SPEED * forward;
-  velocity.z += dirZ * MOVEMENT_SPEED * forward;
-
-  const vec = new Vector2(velocity.x, velocity.z);
-
-  if (vec.length() > MAX_SPEED) {
-    vec.normalize().multiplyScalar(MAX_SPEED);
-  }
-
-  velocity.x = vec.x * 0.9;
-  velocity.z = vec.y * 0.9;
-};
-
 export const updateRotation = (player: RapierRigidBody, direction: Vector2) => {
   if (!direction.x && !direction.y) return;
 

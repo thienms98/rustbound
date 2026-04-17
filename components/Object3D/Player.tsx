@@ -5,7 +5,6 @@ import { forwardRef, useEffect } from "react";
 const Player = forwardRef<RapierRigidBody, { animation: string }>(
   ({ animation }, ref) => {
     const { scene, animations } = useGLTF("/girl.glb");
-    // const { scene, animations, nodes } = useGLTF("/girl_mechanic.glb");
     const { actions } = useAnimations(animations, scene);
 
     useEffect(() => {
