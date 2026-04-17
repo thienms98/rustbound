@@ -5,11 +5,9 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { Object3D, Raycaster } from 'three';
 import { useInventory } from '@/store/inventory';
-import { getRaycastedIntersects } from '@/lib/raycaster';
-import { getCloseIntersects, getRespawnResource, initialSpawn } from '@/lib/resource';
-import { CharacterAction } from '@/types/character';
+import { getRespawnResource, initialSpawn } from '@/lib/resource';
 import { RapierRigidBody } from '@react-three/rapier';
-import { ATTACK_TIME, handleAttack, handleAttackCooldown, onObjectHit } from '@/lib/attack';
+import { handleAttack } from '@/lib/attack';
 import { handleAnimation } from '@/lib/animation';
 
 const PlayerController = () => {
@@ -22,7 +20,6 @@ const PlayerController = () => {
 
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
-  const [actions, setActions] = useState<CharacterAction[]>([]);
 
   const [animation, setAnimation] = useState<'root|Girl_Idle' | 'root|Girl_walk' | 'root|Girl_run'>('root|Girl_Idle');
 
@@ -37,6 +34,7 @@ const PlayerController = () => {
       player: playerRef.current,
       objects: objectsRef.current ? objectsRef.current.children : [],
       keys: keysRef.current,
+      stats: statsRef.current,
       raycaster: raycasterRef.current,
       resources,
       delta,
@@ -49,25 +47,16 @@ const PlayerController = () => {
     updatePosition(payload);
     updateCameraPosition(payload);
     setAnimation(handleAnimation(payload));
-    statsRef.current.attackCooldown = handleAttackCooldown(statsRef.current.attackCooldown, delta);
 
-    let newResources = [...resources];
+    // TODO: WRONG conne raycast targets
+    const attackResults = handleAttack(payload);
 
-    if (objectsRef.current) {
-      const intersects = getRaycastedIntersects(payload);
+    const { hitObjects } = attackResults;
+    setTargets(hitObjects);
 
-      setTargets(getCloseIntersects(playerRef.current, intersects));
-      if (keysRef.current.has('e') && statsRef.current.attackCooldown <= 0) {
-        handleAttack({
-          intersects,
-          onHit: (object) => {
-            newResources = onObjectHit(object, newResources, addItem);
-          },
-        });
-        statsRef.current.attackCooldown = ATTACK_TIME;
-      }
-    }
+    // TODO: handle hitObjects and return item with 0 hp then addItem
 
+    let { resources: newResources } = attackResults;
     newResources = getRespawnResource(newResources);
     setResources(newResources);
   });
