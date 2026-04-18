@@ -57,6 +57,7 @@ export const getAttackedObjects = (payload: AttackPayload) => {
   forward.applyQuaternion(player.rotation()).normalize();
 
   const hits: Object3D[] = [];
+  console.log('🚀 ~ getAttackedObjects ~ objects:', objects);
   objects.forEach((obj) => {
     const pos = obj.getWorldPosition(new Vector3());
     console.log('🚀 ~ getAttackedObjects ~ pos:', pos);

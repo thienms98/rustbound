@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Floor from "@/components/Object3D/Floor";
-import { Canvas } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
-import { Physics } from "@react-three/rapier";
-import PlayerController from "@/components/PlayerController";
-import Inventory from "@/components/Inventory";
-import { Suspense } from "react";
+import Ground from '@/components/Object3D/Floor';
+import { Canvas } from '@react-three/fiber';
+import { Environment, OrbitControls } from '@react-three/drei';
+import { Physics } from '@react-three/rapier';
+import PlayerController from '@/components/PlayerController';
+import Inventory from '@/components/Inventory';
+import { Suspense } from 'react';
 
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
       <Canvas camera={{ fov: 30 }}>
         <Suspense>
           <Physics debug>
-            <Floor />
+            <Ground />
             <PlayerController />
           </Physics>
         </Suspense>
