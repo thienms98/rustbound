@@ -26,8 +26,21 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
       {resources.map(
         (item) =>
           item.alive && (
-            <RigidBody type="fixed" colliders="cuboid" restitution={0} friction={1} key={item.id}>
+            <RigidBody
+              type="fixed"
+              colliders="cuboid"
+              restitution={0}
+              friction={1}
+              key={item.id}
+              userData={{
+                id: item.id,
+                type: item.type,
+                hp: item.hp,
+                position: item.position,
+              }}
+            >
               <mesh
+                type="resource"
                 position={item.position}
                 userData={{
                   id: item.id,
@@ -35,7 +48,7 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
                   hp: item.hp,
                 }}
               >
-                {item.type === ResourceType.TREE ? <coneGeometry args={[1, 6, 64, 1]} /> : <sphereGeometry args={[6, 32, 16]} />}
+                {item.type === ResourceType.TREE ? <coneGeometry args={[1, 6, 64, 1]} /> : <sphereGeometry args={[3, 32, 16]} />}
                 <meshStandardMaterial color={item.type === ResourceType.TREE ? 'green' : 'gray'} />
                 {targets.includes(item.id) && (
                   <Html position={[0, 3, 0]} center>

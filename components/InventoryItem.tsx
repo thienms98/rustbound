@@ -1,30 +1,17 @@
-import {
-  ASSET_SIZE,
-  getResourceAssetPosition,
-  type InventoryItem as InventoryItemType
-} from "@/lib/inventory";
-import { useInventory } from "@/store/inventory";
-import { useEffect, useMemo, useRef } from "react";
+import { ASSET_SIZE, getResourceAssetPosition, type InventoryItem as InventoryItemType } from '@/lib/inventory';
+import { useInventory } from '@/store/inventory';
+import { useEffect, useRef } from 'react';
 
 interface Props {
-  dragItem?: InventoryItemType;
-  setDragItem: React.Dispatch<
-    React.SetStateAction<InventoryItemType | undefined>
-  >;
+  order: number;
+  dragItem?: number;
+  setDragItem: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-const InventoryItem = ({
-  dragItem,
-  setDragItem,
-  ...item
-}: InventoryItemType & Props) => {
+const InventoryItem = ({ dragItem, setDragItem, order, ...item }: InventoryItemType & Props) => {
   const swapItem = useInventory((state) => state.swapItem);
   const ref = useRef<HTMLDivElement>(null);
-  const position = useMemo(
-    () =>
-      Number.isInteger(item.type) ? getResourceAssetPosition(item.type) : null,
-    [item.type]
-  );
+  const position = 'type' in item && item.type ? getResourceAssetPosition(item.type) : null;
 
   useEffect(() => {
     const inventoryItem = ref.current;
@@ -34,45 +21,39 @@ const InventoryItem = ({
     };
 
     const onDrag = () => {
-      setDragItem(item);
+      setDragItem(order);
     };
     const onDrop = () => {
-      console.log("drop: ", item);
-      if (dragItem) swapItem(dragItem, item);
+      if (typeof dragItem !== 'number') return;
+      swapItem(dragItem, order);
+      setDragItem(undefined);
     };
 
-    inventoryItem?.addEventListener("drag", onDrag);
-    inventoryItem?.addEventListener("drop", onDrop);
-    inventoryItem?.addEventListener("dragover", onDragOver);
+    inventoryItem?.addEventListener('drag', onDrag);
+    inventoryItem?.addEventListener('drop', onDrop);
+    inventoryItem?.addEventListener('dragover', onDragOver);
 
     return () => {
-      inventoryItem?.removeEventListener("drag", onDrag);
-      inventoryItem?.removeEventListener("drop", onDrop);
-      inventoryItem?.removeEventListener("dragover", onDragOver);
+      inventoryItem?.removeEventListener('drag', onDrag);
+      inventoryItem?.removeEventListener('drop', onDrop);
+      inventoryItem?.removeEventListener('dragover', onDragOver);
     };
-  }, [dragItem, item, setDragItem, swapItem]);
+  }, [dragItem, item, order, setDragItem, swapItem]);
 
   return (
-    <div
-      className="relative flex items-center justify-center w-10 h-10 border rounded-lg"
-      ref={ref}
-      draggable
-    >
+    <div className="relative flex items-center justify-center w-10 h-10 border rounded-lg" ref={ref} draggable>
       <div
         style={
           {
-            order: item.order,
+            order: order,
             width: ASSET_SIZE,
             height: ASSET_SIZE,
-            backgroundImage:
-              Number.isInteger(item.type) && 'url("/itemset.png")',
-            backgroundPosition: position && `${position.x}px ${position.y}px`
+            backgroundImage: 'type' in item && item.type && 'url("/itemset.png")',
+            backgroundPosition: position && `${position.x}px ${position.y}px`,
           } as React.CSSProperties
         }
       ></div>
-      <div className="absolute bottom-0.5 right-0.5 text-white font-semibold">
-        {item.quantity ? `x${item.quantity}` : ""}
-      </div>
+      <div className="absolute bottom-0.5 right-0.5 text-white font-semibold">{item.quantity ? `x${item.quantity}` : ''}</div>
     </div>
   );
 };

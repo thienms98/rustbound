@@ -1,5 +1,6 @@
-import { ResourceType } from "./resource";
-import { v4 } from "uuid";
+import InventoryItem from '@/components/InventoryItem';
+import { ResourceType } from './resource';
+import { v4 } from 'uuid';
 
 export type InventoryRule = Record<
   ResourceType,
@@ -9,21 +10,20 @@ export type InventoryRule = Record<
 >;
 
 export interface InventoryItem {
-  id: string;
-  type: ResourceType;
+  id?: string;
+  type?: ResourceType;
   quantity: number;
-  order: number;
 }
 
 export const MAX_SLOT = 8;
 
 export const resourceInventoryRules: InventoryRule = {
   [ResourceType.TREE]: {
-    maxStacks: 5
+    maxStacks: 5,
   },
   [ResourceType.ROCK]: {
-    maxStacks: 2
-  }
+    maxStacks: 2,
+  },
 };
 
 interface InventoryAddPayload {
@@ -32,18 +32,12 @@ interface InventoryAddPayload {
   quantity: number;
 }
 
-export const addItemToInventory = ({
-  items,
-  type,
-  quantity
-}: InventoryAddPayload): InventoryItem[] => {
+export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayload): InventoryItem[] => {
   const newItems = [...items];
   const { maxStacks } = resourceInventoryRules[type];
 
   while (quantity > 0) {
-    const item = newItems.find(
-      (i) => i.type === type && i.quantity < maxStacks
-    );
+    const item = newItems.find((i) => i.type === type && i.quantity < maxStacks);
 
     const maxAbleToAdd = item ? maxStacks - item.quantity : maxStacks;
     const toAdd = Math.min(quantity, maxAbleToAdd);
@@ -60,66 +54,46 @@ export const addToExistsSlot = (item: InventoryItem, quantity: number) => {
   item.quantity += quantity;
 };
 
-export const addNewItemSlot = ({
-  items,
-  quantity,
-  type
-}: InventoryAddPayload) => {
-  if (items.length === MAX_SLOT) return;
-
+export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) => {
   for (let order = 0; order < MAX_SLOT; order++) {
-    const exists = Boolean(items.find((i) => i.order));
-    if (!exists) {
-      items.push({
-        id: v4(),
-        type,
-        quantity,
-        order
-      });
-      return;
-    }
+    const idx = items.findIndex((i) => !i.type);
+    if (idx === -1) return items;
+
+    items[idx] = {
+      id: v4(),
+      type,
+      quantity,
+    };
+    return items;
   }
 };
 
-export const swapInventoryItem = ({
-  items,
-  source,
-  target
-}: {
-  items: InventoryItem[];
-  source: InventoryItem;
-  target: InventoryItem;
-}) => {
-  if (source.type === target.type) {
-    const { maxStacks } = resourceInventoryRules[target.type];
-    const newTargetQty = Math.min(maxStacks, target.quantity + source.quantity);
-    const newSourceQty = source.quantity - (newTargetQty - target.quantity);
+export const swapInventoryItem = ({ items, source, target }: { items: InventoryItem[]; source: number; target: number }) => {
+  const newItems = [...items];
+  const sourceItem = newItems[source];
+  const targetItem = newItems[target];
 
-    return [...items].map((item) => ({
-      ...item,
-      quantity:
-        item.id === target.id
-          ? newTargetQty
-          : item.id === source.id
-            ? newSourceQty
-            : item.quantity
-    }));
+  if (!sourceItem.id) return;
+
+  if (sourceItem.type === targetItem.type && targetItem.type) {
+    const { maxStacks } = resourceInventoryRules[targetItem.type];
+    const newTargetQty = Math.min(maxStacks, targetItem.quantity + sourceItem.quantity);
+    const newSourceQty = sourceItem.quantity - (newTargetQty - targetItem.quantity);
+
+    newItems[target].quantity = newTargetQty;
+    newItems[source].quantity = newSourceQty;
+
+    return newItems;
   }
 
-  return [...items].map((item) => ({
-    ...item,
-    order:
-      item.id === target.id
-        ? target.order
-        : item.id === source.id
-          ? source.order
-          : item.order
-  }));
+  newItems[target] = { ...items[source] };
+  newItems[source] = { ...items[target] };
+  return newItems;
 };
 
 export const ASSET_MAP = {
   [ResourceType.ROCK]: { x: 7, y: 9 },
-  [ResourceType.TREE]: { x: 8, y: 5 }
+  [ResourceType.TREE]: { x: 8, y: 5 },
 };
 export const ASSET_SIZE = 16;
 
@@ -128,6 +102,6 @@ export const getResourceAssetPosition = (type: ResourceType) => {
 
   return {
     x: x * ASSET_SIZE,
-    y: y * ASSET_SIZE
+    y: y * ASSET_SIZE,
   };
 };
