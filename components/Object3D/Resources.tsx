@@ -26,7 +26,19 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
       {resources.map(
         (item) =>
           item.alive && (
-            <RigidBody type="fixed" colliders="cuboid" restitution={0} friction={1} key={item.id}>
+            <RigidBody
+              type="fixed"
+              colliders="cuboid"
+              restitution={0}
+              friction={1}
+              key={item.id}
+              userData={{
+                id: item.id,
+                type: item.type,
+                hp: item.hp,
+                position: item.position,
+              }}
+            >
               <mesh
                 type="resource"
                 position={item.position}

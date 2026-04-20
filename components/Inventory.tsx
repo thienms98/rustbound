@@ -35,7 +35,7 @@ const Inventory = () => {
   return (
     <div
       className={cn(
-        "fixed top-2 left-2 gap-4 bg-white/50 backdrop-blur-2xl p-2 rounded-lg text-black text-sm grid grid-cols-5 select-none",
+        "fixed top-20 left-2 gap-4 bg-white/50 backdrop-blur-2xl p-2 rounded-lg text-black text-sm grid grid-cols-5 select-none",
         inventory ? "" : "hidden"
       )}
     >
