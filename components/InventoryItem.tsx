@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 
 interface Props {
   order: number;
-  dragItem: number;
+  dragItem?: number;
   setDragItem: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
