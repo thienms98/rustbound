@@ -73,7 +73,6 @@ export const getInRangeObjects = (payload: AttackPayload) => {
   forward.applyQuaternion(player.rotation()).normalize();
 
   const hits: Object3D[] = [];
-  // console.log('🚀 ~ getAttackedObjects ~ objects:', objects);
   objects.forEach((obj) => {
     const pos = obj.userData.position as Vector3;
     const target = pos.clone().sub(origin);

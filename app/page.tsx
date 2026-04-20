@@ -1,6 +1,6 @@
 'use client';
 
-import Floor from '@/components/Object3D/Floor';
+import Floor from '@/components/Object3D/Ground';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, Stats } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';

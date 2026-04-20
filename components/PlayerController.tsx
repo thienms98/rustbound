@@ -51,7 +51,7 @@ const PlayerController = () => {
     const attackResults = handleAttack(payload, (items) => {
       // TODO: Thêm hàm addItems để tránh async do setState khi có nhiều type cũng lúc
       Object.entries(items).forEach(([type, quantity]) => {
-        addItem(type as unknown as ResourceType, quantity);
+        if (quantity) addItem(type as unknown as ResourceType, quantity);
       });
     });
 

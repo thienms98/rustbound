@@ -1,3 +1,4 @@
+import InventoryItem from '@/components/InventoryItem';
 import { ResourceType } from './resource';
 import { v4 } from 'uuid';
 
@@ -9,10 +10,9 @@ export type InventoryRule = Record<
 >;
 
 export interface InventoryItem {
-  id: string;
-  type: ResourceType;
+  id?: string;
+  type?: ResourceType;
   quantity: number;
-  order: number;
 }
 
 export const MAX_SLOT = 8;
@@ -55,38 +55,40 @@ export const addToExistsSlot = (item: InventoryItem, quantity: number) => {
 };
 
 export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) => {
-  if (items.length === MAX_SLOT) return;
-
   for (let order = 0; order < MAX_SLOT; order++) {
-    const exists = Boolean(items.find((i) => i.order));
-    if (!exists) {
-      items.push({
-        id: v4(),
-        type,
-        quantity,
-        order,
-      });
-      return;
-    }
+    const idx = items.findIndex((i) => !i.type);
+    if (idx === -1) return items;
+
+    items[idx] = {
+      id: v4(),
+      type,
+      quantity,
+    };
+    return items;
   }
 };
 
-export const swapInventoryItem = ({ items, source, target }: { items: InventoryItem[]; source: InventoryItem; target: InventoryItem }) => {
-  if (source.type === target.type) {
-    const { maxStacks } = resourceInventoryRules[target.type];
-    const newTargetQty = Math.min(maxStacks, target.quantity + source.quantity);
-    const newSourceQty = source.quantity - (newTargetQty - target.quantity);
+export const swapInventoryItem = ({ items, source, target }: { items: InventoryItem[]; source: number; target: number }) => {
+  const newItems = [...items];
+  const sourceItem = newItems[source];
+  const targetItem = newItems[target];
 
-    return [...items].map((item) => ({
-      ...item,
-      quantity: item.id === target.id ? newTargetQty : item.id === source.id ? newSourceQty : item.quantity,
-    }));
+  if (!sourceItem.id) return;
+
+  if (sourceItem.type === targetItem.type && targetItem.type) {
+    const { maxStacks } = resourceInventoryRules[targetItem.type];
+    const newTargetQty = Math.min(maxStacks, targetItem.quantity + sourceItem.quantity);
+    const newSourceQty = sourceItem.quantity - (newTargetQty - targetItem.quantity);
+
+    newItems[target].quantity = newTargetQty;
+    newItems[source].quantity = newSourceQty;
+
+    return newItems;
   }
 
-  return [...items].map((item) => ({
-    ...item,
-    order: item.id === target.id ? target.order : item.id === source.id ? source.order : item.order,
-  }));
+  newItems[target] = { ...items[source] };
+  newItems[source] = { ...items[target] };
+  return newItems;
 };
 
 export const ASSET_MAP = {

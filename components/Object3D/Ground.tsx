@@ -6,7 +6,7 @@ const Ground = () => {
   const texture = useTexture('./Ground.png', (t) => {
     t.wrapS = RepeatWrapping;
     t.wrapT = RepeatWrapping;
-    t.repeat.set(10, 10);
+    t.repeat.set(50, 50);
   });
 
   return (
