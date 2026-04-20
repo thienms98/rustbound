@@ -13,6 +13,7 @@ export const SPRINT_SPEED = 10;
 export const ROTATE_SPEED = Math.PI / 180;
 
 export const initialStats: CharacterStats = {
+  rotation: 0,
   attackCooldown: 0,
 };
 
@@ -54,23 +55,27 @@ export const updatePosition = (payload: { player: RapierRigidBody; direction: Ve
   );
 };
 
-export const updateRotation = ({ player, direction }: { player: RapierRigidBody; direction: Vector2 }) => {
-  if (!direction.x && !direction.y) return;
+export const updateRotation = ({ player, direction, stats }: { player: RapierRigidBody; direction: Vector2; stats: CharacterStats }) => {
+  if (!direction.length()) return;
 
-  if (direction.length() > 0) direction.normalize();
+  direction.normalize();
   const angle = Math.atan2(direction.x, direction.y);
+
+  const delta = angle - stats.rotation;
+  const shortest = Math.atan2(Math.sin(delta), Math.cos(delta));
+
+  // 🔥 smooth factor (0.1 → chậm, 0.3 → nhanh)
+  stats.rotation += shortest * 0.2;
 
   player.setRotation(
     {
       x: 0,
-      y: Math.sin(angle / 2),
+      y: Math.sin(stats.rotation / 2),
       z: 0,
-      w: Math.cos(angle / 2),
+      w: Math.cos(stats.rotation / 2),
     },
     true,
   );
-
-  return angle;
 };
 
 const CAMERA_OFFSET = {

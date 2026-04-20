@@ -1,10 +1,10 @@
-import { Resource } from "@/components/Object3D/Resources";
-import { Object3D, Vector3 } from "three";
-import { ResourceType } from "./resource";
-import { RapierRigidBody } from "@react-three/rapier";
-import { keysContainsAction } from "./utils";
-import { CharacterStats } from "@/types/character";
-import { ACTION_KEYS } from "./keyboard";
+import { Resource } from '@/components/Object3D/Resources';
+import { Object3D, Vector3 } from 'three';
+import { ResourceType } from './resource';
+import { RapierRigidBody } from '@react-three/rapier';
+import { keysContainsAction } from './utils';
+import { CharacterStats } from '@/types/character';
+import { ACTION_KEYS } from './keyboard';
 
 export const ATTACK_COOLDOWN = 0.5;
 export const ATTACK_RANGE = 10;
@@ -21,22 +21,19 @@ interface AttackPayload {
   delta: number;
 }
 
-export const handleAttack = (
-  payload: AttackPayload,
-  onHarvest: (items: Record<ResourceType, number>) => void
-) => {
+export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<ResourceType, number>) => void) => {
   const { stats, keys, resources } = payload;
   stats.attackCooldown = handleAttackCooldown(payload);
 
-  const inRangeObjects = getInRangeObjects(payload).map((i) =>
-    String(i.userData.id)
-  );
+  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0) return null;
 
-  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0)
-    return { inRangeObjects, resources };
+  const inRangeObjects = getInRangeObjects(payload).map((i) => String(i.userData.id));
   stats.attackCooldown = ATTACK_COOLDOWN;
 
-  const harvested: Record<ResourceType, number> = {};
+  const harvested: Record<ResourceType, number> = {
+    [ResourceType.TREE]: 0,
+    [ResourceType.ROCK]: 0,
+  };
 
   const newResources = [...resources].map((res) => {
     if (!inRangeObjects.includes(res.id)) return res;
@@ -57,7 +54,7 @@ export const handleAttack = (
       ...res,
       hp: newHp,
       alive,
-      respawnAt
+      respawnAt,
     };
   });
 
@@ -76,7 +73,7 @@ export const getInRangeObjects = (payload: AttackPayload) => {
   forward.applyQuaternion(player.rotation()).normalize();
 
   const hits: Object3D[] = [];
-  console.log('🚀 ~ getAttackedObjects ~ objects:', objects);
+  // console.log('🚀 ~ getAttackedObjects ~ objects:', objects);
   objects.forEach((obj) => {
     const pos = obj.userData.position as Vector3;
     const target = pos.clone().sub(origin);
@@ -92,11 +89,7 @@ export const getInRangeObjects = (payload: AttackPayload) => {
   return hits;
 };
 
-export const onObjectHit = (
-  object: Object3D,
-  resources: Resource[],
-  onDead?: (type: ResourceType, quantity: number) => void
-) => {
+export const onObjectHit = (object: Object3D, resources: Resource[], onDead?: (type: ResourceType, quantity: number) => void) => {
   const newResources = [...resources];
   const item = resources.find((item) => item.id === object.userData.id);
   if (!item) return newResources;

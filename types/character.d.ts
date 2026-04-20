@@ -9,6 +9,7 @@ export type Velocity = {
 };
 
 export interface CharacterStats {
+  rotation: number;
   attackCooldown: number;
 }
 
