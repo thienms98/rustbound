@@ -1,16 +1,16 @@
-import { Resource } from '@/components/Object3D/Resources';
-import { Object3D, Vector3 } from 'three';
-import { ResourceType } from './resource';
-import { RapierRigidBody } from '@react-three/rapier';
-import { keysContainsAction } from './utils';
-import { CharacterStats } from '@/types/character';
-import { ACTION_KEYS } from './keyboard';
+import { Resource } from "@/components/Object3D/Resources";
+import { Object3D, Vector3 } from "three";
+import { ResourceType } from "./resource";
+import { RapierRigidBody } from "@react-three/rapier";
+import { keysContainsAction } from "./utils";
+import { CharacterStats } from "@/types/character";
+import { ACTION_KEYS } from "./keyboard";
 
 export const ATTACK_COOLDOWN = 0.5;
-export const ATTACK_RANGE = 20;
-export const ATTACK_RADIUS = Math.PI / 2;
+export const ATTACK_RANGE = 10;
+export const ATTACK_RADIUS = Math.PI / 3;
 
-export const RESPAWN_TIME = 60000; // at ms
+export const RESPAWN_TIME = 5000; // at ms
 
 interface AttackPayload {
   player: RapierRigidBody;
@@ -21,53 +21,69 @@ interface AttackPayload {
   delta: number;
 }
 
-export const handleAttack = (payload: AttackPayload) => {
+export const handleAttack = (
+  payload: AttackPayload,
+  onHarvest: (items: Record<ResourceType, number>) => void
+) => {
   const { stats, keys, resources } = payload;
   stats.attackCooldown = handleAttackCooldown(payload);
 
-  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0) return { hitObjects: [], resources };
-  stats.attackCooldown = ATTACK_COOLDOWN;
-  const hitObjects = getAttackedObjects(payload).map((i) => i.userData.id);
-  const newResources = [...resources].map((res) => {
-    if (!hitObjects.includes(res.id)) return res;
+  const inRangeObjects = getInRangeObjects(payload).map((i) =>
+    String(i.userData.id)
+  );
 
-    const newHp = Math.min(res.hp - 1, 0);
-    const alive = newHp ? true : false;
-    const respawnAt = alive ? res.respawnAt : Date.now() + RESPAWN_TIME;
+  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0)
+    return { inRangeObjects, resources };
+  stats.attackCooldown = ATTACK_COOLDOWN;
+
+  const harvested: Record<ResourceType, number> = {};
+
+  const newResources = [...resources].map((res) => {
+    if (!inRangeObjects.includes(res.id)) return res;
+
+    const newHp = Math.max(res.hp - 1, 0);
+    let alive = true;
+    let respawnAt = res.respawnAt;
+
+    if (newHp === 0) {
+      alive = false;
+      respawnAt = Date.now() + RESPAWN_TIME;
+
+      harvested[res.type]++;
+      if (!harvested[res.type]) harvested[res.type] = 1;
+    }
 
     return {
       ...res,
       hp: newHp,
       alive,
-      respawnAt,
+      respawnAt
     };
   });
 
-  return { resources: newResources, hitObjects };
+  onHarvest(harvested);
+
+  return { resources: newResources, inRangeObjects };
 };
 
-export const getAttackedObjects = (payload: AttackPayload) => {
+export const getInRangeObjects = (payload: AttackPayload) => {
   const { objects, player } = payload;
   const { x, y, z } = player.translation();
 
   const origin = new Vector3(x, y, z);
 
   const forward = new Vector3(0, 0, 1);
-  console.log({ origin, forward });
   forward.applyQuaternion(player.rotation()).normalize();
 
   const hits: Object3D[] = [];
   objects.forEach((obj) => {
-    const pos = obj.getWorldPosition(new Vector3());
-    console.log('🚀 ~ getAttackedObjects ~ pos:', pos);
+    const pos = obj.userData.position as Vector3;
     const target = pos.clone().sub(origin);
     const distance = target.length();
-    console.log('🚀 ~ getAttackedObjects ~ distance:', distance);
 
     if (distance > ATTACK_RANGE) return;
 
     const dot = forward.dot(target);
-    console.log('🚀 ~ getAttackedObjects ~ dot:', dot);
 
     if (dot > Math.cos(ATTACK_RADIUS / 2)) hits.push(obj);
   });
@@ -75,7 +91,11 @@ export const getAttackedObjects = (payload: AttackPayload) => {
   return hits;
 };
 
-export const onObjectHit = (object: Object3D, resources: Resource[], onDead?: (type: ResourceType, quantity: number) => void) => {
+export const onObjectHit = (
+  object: Object3D,
+  resources: Resource[],
+  onDead?: (type: ResourceType, quantity: number) => void
+) => {
   const newResources = [...resources];
   const item = resources.find((item) => item.id === object.userData.id);
   if (!item) return newResources;

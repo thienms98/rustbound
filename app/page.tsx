@@ -2,7 +2,7 @@
 
 import Floor from "@/components/Object3D/Floor";
 import { Canvas } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls, Stats } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import PlayerController from "@/components/PlayerController";
 import Inventory from "@/components/Inventory";
@@ -13,7 +13,7 @@ export default function Home() {
     <main className="w-screen h-screen">
       <Canvas camera={{ fov: 30 }}>
         <Suspense>
-          <Physics debug>
+          <Physics>
             <Floor />
             <PlayerController />
           </Physics>
@@ -24,6 +24,7 @@ export default function Home() {
 
         <Environment preset="dawn" background />
 
+        <Stats />
         <OrbitControls />
       </Canvas>
       <Inventory />

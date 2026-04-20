@@ -32,6 +32,12 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
               restitution={0}
               friction={1}
               key={item.id}
+              userData={{
+                id: item.id,
+                type: item.type,
+                hp: item.hp,
+                position: item.position
+              }}
             >
               <mesh
                 position={item.position}

@@ -1,14 +1,20 @@
-import Player from './Object3D/Player';
-import Resources, { type Resource } from './Object3D/Resources';
-import { initialStats, updateCameraPosition, updatePosition, getDirections, updateRotation } from '@/lib/movement';
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
-import { Object3D, Raycaster } from 'three';
-import { useInventory } from '@/store/inventory';
-import { getRespawnResource, initialSpawn } from '@/lib/resource';
-import { RapierRigidBody } from '@react-three/rapier';
-import { handleAttack } from '@/lib/attack';
-import { handleAnimation } from '@/lib/animation';
+import Player from "./Object3D/Player";
+import Resources, { type Resource } from "./Object3D/Resources";
+import {
+  initialStats,
+  updateCameraPosition,
+  updatePosition,
+  getDirections,
+  updateRotation
+} from "@/lib/movement";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Object3D, Raycaster } from "three";
+import { useInventory } from "@/store/inventory";
+import { getRespawnResource, initialSpawn, ResourceType } from "@/lib/resource";
+import { RapierRigidBody } from "@react-three/rapier";
+import { handleAttack } from "@/lib/attack";
+import { handleAnimation } from "@/lib/animation";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -21,7 +27,9 @@ const PlayerController = () => {
   const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
 
-  const [animation, setAnimation] = useState<'root|Girl_Idle' | 'root|Girl_walk' | 'root|Girl_run'>('root|Girl_Idle');
+  const [animation, setAnimation] = useState<
+    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
+  >("root|Girl_Idle");
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -29,7 +37,7 @@ const PlayerController = () => {
     if (!playerRef.current) return;
 
     const direction = getDirections(keysRef.current);
-    const isSprint = keysRef.current.has('shift');
+    const isSprint = keysRef.current.has("shift");
     const payload = {
       player: playerRef.current,
       objects: objectsRef.current ? objectsRef.current.children : [],
@@ -40,7 +48,7 @@ const PlayerController = () => {
       delta,
       camera,
       direction,
-      isSprint,
+      isSprint
     };
 
     updateRotation(payload);
@@ -48,13 +56,16 @@ const PlayerController = () => {
     updateCameraPosition(payload);
     setAnimation(handleAnimation(payload));
 
-    // TODO: WRONG conne raycast targets
-    const attackResults = handleAttack(payload);
+    const attackResults = handleAttack(payload, (items) => {
+      // TODO: Thêm hàm addItems để tránh async do setState khi có nhiều type cũng lúc //
+      Object.entries(items).forEach(([type, quantity]) => {
+        console.log("🚀 ~ PlayerController ~ type, quantity:", type, quantity);
+        addItem(type, quantity);
+      });
+    });
 
-    const { hitObjects } = attackResults;
-    setTargets(hitObjects);
-
-    // TODO: handle hitObjects and return item with 0 hp then addItem
+    const { inRangeObjects } = attackResults;
+    setTargets(inRangeObjects);
 
     let { resources: newResources } = attackResults;
     newResources = getRespawnResource(newResources);
@@ -70,12 +81,12 @@ const PlayerController = () => {
       keysRef.current.delete(e.key.toLowerCase());
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, []);
 
