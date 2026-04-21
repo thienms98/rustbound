@@ -1,6 +1,6 @@
-import InventoryItem from '@/components/InventoryItem';
-import { ResourceType } from './resource';
-import { v4 } from 'uuid';
+import InventoryItem from "@/components/layouts/InventoryItem";
+import { ResourceType } from "./resource";
+import { v4 } from "uuid";
 
 export type InventoryRule = Record<
   ResourceType,
@@ -19,11 +19,11 @@ export const MAX_SLOT = 8;
 
 export const resourceInventoryRules: InventoryRule = {
   [ResourceType.TREE]: {
-    maxStacks: 5,
+    maxStacks: 5
   },
   [ResourceType.ROCK]: {
-    maxStacks: 2,
-  },
+    maxStacks: 2
+  }
 };
 
 interface InventoryAddPayload {
@@ -32,12 +32,18 @@ interface InventoryAddPayload {
   quantity: number;
 }
 
-export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayload): InventoryItem[] => {
+export const addItemToInventory = ({
+  items,
+  type,
+  quantity
+}: InventoryAddPayload): InventoryItem[] => {
   const newItems = [...items];
   const { maxStacks } = resourceInventoryRules[type];
 
   while (quantity > 0) {
-    const item = newItems.find((i) => i.type === type && i.quantity < maxStacks);
+    const item = newItems.find(
+      (i) => i.type === type && i.quantity < maxStacks
+    );
 
     const maxAbleToAdd = item ? maxStacks - item.quantity : maxStacks;
     const toAdd = Math.min(quantity, maxAbleToAdd);
@@ -54,7 +60,11 @@ export const addToExistsSlot = (item: InventoryItem, quantity: number) => {
   item.quantity += quantity;
 };
 
-export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) => {
+export const addNewItemSlot = ({
+  items,
+  quantity,
+  type
+}: InventoryAddPayload) => {
   for (let order = 0; order < MAX_SLOT; order++) {
     const idx = items.findIndex((i) => !i.type);
     if (idx === -1) return items;
@@ -62,13 +72,21 @@ export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) =
     items[idx] = {
       id: v4(),
       type,
-      quantity,
+      quantity
     };
     return items;
   }
 };
 
-export const swapInventoryItem = ({ items, source, target }: { items: InventoryItem[]; source: number; target: number }) => {
+export const swapInventoryItem = ({
+  items,
+  source,
+  target
+}: {
+  items: InventoryItem[];
+  source: number;
+  target: number;
+}) => {
   const newItems = [...items];
   const sourceItem = newItems[source];
   const targetItem = newItems[target];
@@ -77,8 +95,12 @@ export const swapInventoryItem = ({ items, source, target }: { items: InventoryI
 
   if (sourceItem.type === targetItem.type && targetItem.type) {
     const { maxStacks } = resourceInventoryRules[targetItem.type];
-    const newTargetQty = Math.min(maxStacks, targetItem.quantity + sourceItem.quantity);
-    const newSourceQty = sourceItem.quantity - (newTargetQty - targetItem.quantity);
+    const newTargetQty = Math.min(
+      maxStacks,
+      targetItem.quantity + sourceItem.quantity
+    );
+    const newSourceQty =
+      sourceItem.quantity - (newTargetQty - targetItem.quantity);
 
     newItems[target].quantity = newTargetQty;
     newItems[source].quantity = newSourceQty;
@@ -93,7 +115,7 @@ export const swapInventoryItem = ({ items, source, target }: { items: InventoryI
 
 export const ASSET_MAP = {
   [ResourceType.ROCK]: { x: 7, y: 9 },
-  [ResourceType.TREE]: { x: 8, y: 5 },
+  [ResourceType.TREE]: { x: 8, y: 5 }
 };
 export const ASSET_SIZE = 16;
 
@@ -102,6 +124,6 @@ export const getResourceAssetPosition = (type: ResourceType) => {
 
   return {
     x: x * ASSET_SIZE,
-    y: y * ASSET_SIZE,
+    y: y * ASSET_SIZE
   };
 };
