@@ -1,6 +1,7 @@
 import { CharacterStats } from "@/types/character";
 import { RapierRigidBody } from "@react-three/rapier";
 import { Object3D, Raycaster, Vector3 } from "three";
+import { v4 } from "uuid";
 
 export enum GROWING_STAGE {
   SOIL = "soil",
@@ -15,7 +16,7 @@ export interface Plot {
   id: string;
   position: Vector3;
   plant?: Plant;
-  plantedAt?: Date;
+  plantedAt?: number;
   stage: GROWING_STAGE;
 }
 
@@ -27,7 +28,21 @@ export interface Plant {
   growthTime: number;
 }
 
+export const INTERACT_RANGE = 6;
+
 export const raycastPlots = (payload: {
+  player: RapierRigidBody;
+  keys: Set<string>;
+  plots: Object3D | null;
+  raycaster: Raycaster;
+  stats: CharacterStats;
+}) => {
+  const closest = getClosestPlot(payload);
+
+  return closest?.object;
+};
+
+export const getClosestPlot = (payload: {
   player: RapierRigidBody;
   plots: Object3D | null;
   raycaster: Raycaster;
@@ -50,6 +65,14 @@ export const raycastPlots = (payload: {
   const closest = intersects[0];
   if (!closest) return;
 
-  if (closest.distance < 10) return closest;
+  if (closest.distance < INTERACT_RANGE) return closest;
   else return null;
+};
+
+export const plantCrop = (plot: Plot, plant: Plant): Plot => {
+  return {
+    ...plot,
+    plant,
+    plantedAt: Date.now()
+  };
 };

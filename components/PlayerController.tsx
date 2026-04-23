@@ -16,10 +16,13 @@ import { RapierRigidBody } from "@react-three/rapier";
 import { handleAttack } from "@/lib/attack";
 import { handleAnimation } from "@/lib/animation";
 import Farm from "./Object3D/Farm";
-import { raycastPlots } from "@/lib/farming";
+import { plantCrop, Plot, raycastPlots } from "@/lib/farming";
+import { v4 } from "uuid";
+import { useFarm } from "@/store/plots";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
+  const updatePlot = useFarm((state) => state.updatePlot);
 
   const playerRef = useRef<RapierRigidBody>(null);
   const objectsRef = useRef<Object3D>(null);
@@ -76,7 +79,38 @@ const PlayerController = () => {
     // newResources = getRespawnResource(newResources);
     // setResources(newResources);
 
-    raycastPlots(payload);
+    const target = raycastPlots(payload);
+    setTargets(target ? [target.userData.id] : []);
+    if (target && keysRef.current.has("e")) {
+      const plot = target.userData as Plot;
+      if (plot.plant && plot.plantedAt) {
+        const now = Date.now();
+        const havestTime = plot.plantedAt + plot.plant.growthTime;
+        console.log({
+          havestTime,
+          now
+        });
+
+        if (now >= havestTime) {
+          updatePlot({
+            ...plot,
+            plant: undefined,
+            plantedAt: undefined
+          });
+        } else {
+          console.log(havestTime - now, "ms left");
+        }
+      } else {
+        const newPlot = plantCrop(plot, {
+          id: v4(),
+          name: "carrot",
+          type: "crop",
+          category: "crop",
+          growthTime: 60000
+        });
+        updatePlot(newPlot);
+      }
+    }
   });
 
   useEffect(() => {
@@ -101,7 +135,7 @@ const PlayerController = () => {
     <>
       <Player ref={playerRef} animation={animation} />
       {/* <Resources ref={objectsRef} targets={targets} resources={resources} /> */}
-      {/* <Farm ref={plotsRef} /> */}
+      <Farm ref={plotsRef} targets={targets} />
     </>
   );
 };

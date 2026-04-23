@@ -20,7 +20,7 @@ export default function Home() {
         </Suspense>
 
         <ambientLight />
-        {/* <spotLight /> */}
+        <spotLight position={[0, 100, 0]} />
 
         {/* <Environment preset="dawn" background /> */}
 

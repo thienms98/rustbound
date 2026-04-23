@@ -26,8 +26,13 @@ const initialPlots = (() => {
 
 interface Farm {
   plots: Plot[];
+  updatePlot: (plot: Plot) => void;
 }
 
 export const useFarm = create<Farm>((set) => ({
-  plots: initialPlots
+  plots: initialPlots,
+  updatePlot: (plot: Plot) =>
+    set((state) => ({
+      plots: state.plots.map((p) => (p.id === plot.id ? plot : p))
+    }))
 }));
