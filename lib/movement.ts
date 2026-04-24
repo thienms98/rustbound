@@ -95,9 +95,9 @@ export const updateRotation = ({
 };
 
 const CAMERA_OFFSET = {
-  x: 0,
-  y: 22,
-  z: 80
+  x: 5,
+  y: 80,
+  z: 40
 };
 
 export const updateCameraPosition = (payload: {
