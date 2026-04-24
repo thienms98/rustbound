@@ -1,5 +1,4 @@
-import Player from "./Object3D/Player";
-import Resources, { type Resource } from "./Object3D/Resources";
+import { Player, Resources, type Resource, Farm } from "./Object3D";
 import {
   initialStats,
   updateCameraPosition,
@@ -15,19 +14,20 @@ import { getRespawnResource, initialSpawn, ResourceType } from "@/lib/resource";
 import { RapierRigidBody } from "@react-three/rapier";
 import { handleAttack } from "@/lib/attack";
 import { handleAnimation } from "@/lib/animation";
-import Farm from "./Object3D/Farm";
-import { plantCrop, Plot, raycastPlots } from "@/lib/farming";
+import { GROWING_STAGE, plantCrop, Plot, raycastPlots } from "@/lib/farming";
 import { v4 } from "uuid";
 import { useFarm } from "@/store/plots";
+import { useKeyboard } from "@/store/keyboard";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
   const updatePlot = useFarm((state) => state.updatePlot);
+  const keys = useKeyboard.getState().keys;
 
   const playerRef = useRef<RapierRigidBody>(null);
   const objectsRef = useRef<Object3D>(null);
   const statsRef = useRef(initialStats);
-  const keysRef = useRef<Set<string>>(new Set());
+  // const keysRef = useRef<Set<string>>(new Set());
   const plotsRef = useRef<Object3D>(null);
 
   // const [resources, setResources] = useState<Resource[]>(initialSpawn());
@@ -42,12 +42,12 @@ const PlayerController = () => {
   useFrame(({ camera }, delta) => {
     if (!playerRef.current) return;
 
-    const direction = getDirections(keysRef.current);
-    const isSprint = keysRef.current.has("shift");
+    const direction = getDirections(keys);
+    const isSprint = keys.has("shift");
     const payload = {
       player: playerRef.current,
       objects: objectsRef.current ? objectsRef.current.children : [],
-      keys: keysRef.current,
+      keys,
       stats: statsRef.current,
       raycaster: raycasterRef.current,
       plots: plotsRef.current,
@@ -81,24 +81,21 @@ const PlayerController = () => {
 
     const target = raycastPlots(payload);
     setTargets(target ? [target.userData.id] : []);
-    if (target && keysRef.current.has("e")) {
+    if (target && keys.has("e")) {
       const plot = target.userData as Plot;
       if (plot.plant && plot.plantedAt) {
         const now = Date.now();
         const havestTime = plot.plantedAt + plot.plant.growthTime;
-        console.log({
-          havestTime,
-          now
-        });
 
         if (now >= havestTime) {
           updatePlot({
             ...plot,
+            stage: GROWING_STAGE.SOIL,
             plant: undefined,
             plantedAt: undefined
           });
         } else {
-          console.log(havestTime - now, "ms left");
+          // console.log(havestTime - now, "ms left");
         }
       } else {
         const newPlot = plantCrop(plot, {
@@ -115,11 +112,11 @@ const PlayerController = () => {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      keysRef.current.add(e.key.toLowerCase());
+      keys.add(e.key.toLowerCase());
     };
 
     const onKeyUp = (e: KeyboardEvent) => {
-      keysRef.current.delete(e.key.toLowerCase());
+      keys.delete(e.key.toLowerCase());
     };
 
     document.addEventListener("keydown", onKeyDown);

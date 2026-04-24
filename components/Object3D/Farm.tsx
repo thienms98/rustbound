@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
-import Plot from "./Plot";
 import { Object3D } from "three";
 import { useFarm } from "@/store/plots";
+import { Plot } from ".";
 
 const Farm = forwardRef<Object3D, { targets: string[] }>(({ targets }, ref) => {
   const plots = useFarm((state) => state.plots);
@@ -21,4 +21,4 @@ const Farm = forwardRef<Object3D, { targets: string[] }>(({ targets }, ref) => {
 });
 
 Farm.displayName = "Farm";
-export default Farm;
+export { Farm };

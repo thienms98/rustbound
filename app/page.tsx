@@ -1,8 +1,8 @@
 "use client";
 
-import Floor from "@/components/Object3D/Ground";
+import { Ground } from "@/components/Object3D";
 import { Canvas } from "@react-three/fiber";
-import { Environment, OrbitControls, Sky, Stats } from "@react-three/drei";
+import { OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import PlayerController from "@/components/PlayerController";
 import Inventory from "@/components/Inventory";
@@ -14,20 +14,15 @@ export default function Home() {
       <Canvas camera={{ fov: 30 }}>
         <Suspense>
           <Physics>
-            <Floor />
+            <Ground />
             <PlayerController />
           </Physics>
         </Suspense>
 
         <ambientLight />
         <spotLight position={[0, 100, 0]} />
-
-        {/* <Environment preset="dawn" background /> */}
-
-        {/* Sky */}
         <Sky sunPosition={[100, 20, 100]} />
 
-        {/* Fog */}
         <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
 
         <Stats />
