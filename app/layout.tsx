@@ -31,7 +31,7 @@ export default function RootLayout({
       <Head>
         <link rel="preload" href="/itemset.png" as="image" />
       </Head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex flex-col min-h-full">{children}</body>
     </html>
   );
 }
