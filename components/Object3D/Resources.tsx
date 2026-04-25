@@ -1,23 +1,13 @@
 import { ResourceType } from "@/lib/resource";
+import { Resource } from "@/types/resource";
 import { Html } from "@react-three/drei";
-import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 import { forwardRef } from "react";
-import { Object3D, Vector3 } from "three";
+import { Object3D } from "three";
 
 interface Props {
   targets: string[];
   resources: Resource[];
-}
-
-export interface Resource {
-  id: string;
-  type: ResourceType;
-  position: Vector3;
-  hp: number;
-  maxHp: number;
-
-  alive: boolean;
-  respawnAt?: number;
 }
 
 const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
@@ -75,4 +65,4 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
 });
 
 Resources.displayName = "Resources";
-export { Resources };
+export default Resources;

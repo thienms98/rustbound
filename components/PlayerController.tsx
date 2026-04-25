@@ -1,4 +1,4 @@
-import { Player, Resources, type Resource, Farm } from "./Object3D";
+import { Player, Resources, Farm } from "@/components";
 import {
   initialStats,
   updateCameraPosition,
@@ -9,15 +9,20 @@ import {
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { Object3D, Raycaster } from "three";
-import { useInventory } from "@/store/inventory";
+import { useInventory } from "@/store";
 import { getRespawnResource, initialSpawn, ResourceType } from "@/lib/resource";
 import { RapierRigidBody } from "@react-three/rapier";
 import { handleAttack } from "@/lib/attack";
 import { handleAnimation } from "@/lib/animation";
-import { GROWING_STAGE, plantCrop, Plot, raycastPlots } from "@/lib/farming";
+import {
+  GROWING_STAGE,
+  plantCrop,
+  plants,
+  Plot,
+  raycastPlots
+} from "@/lib/farming";
 import { v4 } from "uuid";
-import { useFarm } from "@/store/plots";
-import { useKeyboard } from "@/store/keyboard";
+import { useFarm, useKeyboard } from "@/store";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -98,13 +103,7 @@ const PlayerController = () => {
           // console.log(havestTime - now, "ms left");
         }
       } else {
-        const newPlot = plantCrop(plot, {
-          id: v4(),
-          name: "carrot",
-          type: "crop",
-          category: "crop",
-          growthTime: 60000
-        });
+        const newPlot = plantCrop(plot, plants.carrot);
         updatePlot(newPlot);
       }
     }
