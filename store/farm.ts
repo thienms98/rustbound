@@ -1,4 +1,4 @@
-import { GROWING_STAGE, Plot } from "@/lib/farming";
+import { GROWING_STAGE, Plant, Plot } from "@/lib/farming";
 import { Vector3 } from "three";
 import { v4 } from "uuid";
 import { create } from "zustand";
@@ -26,11 +26,17 @@ const initialPlots = (() => {
 
 interface Farm {
   plots: Plot[];
+  handSeed: Plant | null;
   updatePlot: (plot: Plot) => void;
 }
 
 export const useFarm = create<Farm>((set) => ({
   plots: initialPlots,
+  handSeed: null,
+  setHandSeed: (seed: Plant | null) =>
+    set(() => ({
+      handSeed: seed
+    })),
   updatePlot: (plot: Plot) =>
     set((state) => ({
       plots: state.plots.map((p) => (p.id === plot.id ? plot : p))

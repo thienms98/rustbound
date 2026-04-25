@@ -21,7 +21,6 @@ import {
   Plot,
   raycastPlots
 } from "@/lib/farming";
-import { v4 } from "uuid";
 import { useFarm, useKeyboard } from "@/store";
 
 const PlayerController = () => {

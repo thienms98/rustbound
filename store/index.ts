@@ -1,3 +1,3 @@
 export * from "./inventory";
 export * from "./keyboard";
-export * from "./plots";
+export * from "./farm";
