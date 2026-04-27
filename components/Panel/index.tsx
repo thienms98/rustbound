@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import AudioPlay from '../AudioPlay';
 import Inventory from './Inventory';
+import { useKeyboard } from '@/store';
 
 const Panel = () => {
   const [panel, setPanel] = useState(false);
   const [tab, setTab] = useState(0);
+  const keys = useKeyboard.getState().keys;
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (['b', 'tab'].includes(e.key.toLowerCase())) {
+      if (keys.has('b') || keys.has('tab')) {
         e.preventDefault();
         setPanel((prev) => !prev);
       }

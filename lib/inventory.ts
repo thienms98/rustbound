@@ -9,13 +9,21 @@ export type InventoryRule = Record<
   }
 >;
 
-export interface InventoryItem {
-  id?: string;
-  type?: ResourceType;
+export interface EmptySlot {
+  id: undefined;
+  type: undefined;
   quantity: number;
 }
 
-export const MAX_SLOT = 8;
+export interface InventorySlot {
+  id: string;
+  type: ResourceType;
+  quantity: number;
+}
+
+export type InventoryItem = InventorySlot | EmptySlot;
+
+export const MAX_SLOT = 20; // 5 cols * 4 rows
 
 export const resourceInventoryRules: InventoryRule = {
   [ResourceType.TREE]: {
@@ -32,19 +40,35 @@ interface InventoryAddPayload {
   quantity: number;
 }
 
+export enum InventoryErrors {
+  FULL_SLOTS = 'Full of slots',
+  EMPTY_SLOT = 'Current slot is empty',
+}
+
 export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayload): InventoryItem[] => {
   const newItems = [...items];
   const { maxStacks } = resourceInventoryRules[type];
 
-  while (quantity > 0) {
-    const item = newItems.find((i) => i.type === type && i.quantity < maxStacks);
+  try {
+    while (quantity > 0) {
+      const item = newItems.find((i) => i.type === type && i.quantity < maxStacks);
 
-    const maxAbleToAdd = item ? maxStacks - item.quantity : maxStacks;
-    const toAdd = Math.min(quantity, maxAbleToAdd);
-    quantity -= toAdd;
+      const maxAbleToAdd = item ? maxStacks - item.quantity : maxStacks;
+      const toAdd = Math.min(quantity, maxAbleToAdd);
+      quantity -= toAdd;
 
-    if (item) addToExistsSlot(item, toAdd);
-    else addNewItemSlot({ items: newItems, type, quantity: toAdd });
+      if (item) addToExistsSlot(item, toAdd);
+      else addNewItemSlot({ items: newItems, type, quantity: toAdd });
+    }
+  } catch (err) {
+    const { message } = err as { message: InventoryErrors };
+    switch (message) {
+      case InventoryErrors.FULL_SLOTS:
+        console.log('full mat rui');
+        break;
+      default:
+        console.log(err);
+    }
   }
 
   return newItems;
@@ -57,7 +81,7 @@ export const addToExistsSlot = (item: InventoryItem, quantity: number) => {
 export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) => {
   for (let order = 0; order < MAX_SLOT; order++) {
     const idx = items.findIndex((i) => !i.type);
-    if (idx === -1) return items;
+    if (idx === -1) throw new Error(InventoryErrors.FULL_SLOTS);
 
     items[idx] = {
       id: v4(),
@@ -81,7 +105,13 @@ export const swapInventoryItem = ({ items, source, target }: { items: InventoryI
     const newSourceQty = sourceItem.quantity - (newTargetQty - targetItem.quantity);
 
     newItems[target].quantity = newTargetQty;
-    newItems[source].quantity = newSourceQty;
+    if (!newSourceQty)
+      newItems[source] = {
+        id: undefined,
+        type: undefined,
+        quantity: 0,
+      };
+    else newItems[source].quantity = newSourceQty;
 
     return newItems;
   }
@@ -104,4 +134,24 @@ export const getResourceAssetPosition = (type: ResourceType) => {
     x: x * ASSET_SIZE,
     y: y * ASSET_SIZE,
   };
+};
+
+export const splitSlot = (items: InventoryItem[], slot: number) => {
+  try {
+    const currentSlot = items[slot];
+    if (!currentSlot || !currentSlot.type || currentSlot.quantity <= 1) throw new Error(InventoryErrors.EMPTY_SLOT);
+
+    const emptySlotIdx = items.findIndex((i) => !i.type);
+    if (emptySlotIdx === -1) throw new Error(InventoryErrors.FULL_SLOTS);
+
+    const splitQty = Math.round(currentSlot.quantity / 2);
+    Object.assign(currentSlot, {
+      quantity: currentSlot.quantity - splitQty,
+    });
+    items[emptySlotIdx] = { ...currentSlot, id: v4(), quantity: splitQty };
+  } catch (err) {
+    console.error(err);
+  }
+
+  return items;
 };

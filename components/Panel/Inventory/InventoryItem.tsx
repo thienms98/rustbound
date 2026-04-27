@@ -1,6 +1,6 @@
-import { ASSET_SIZE, getResourceAssetPosition, type InventoryItem as InventoryItemType } from '@/lib/inventory';
+import { ASSET_SIZE, getResourceAssetPosition, splitSlot, type InventoryItem as InventoryItemType } from '@/lib/inventory';
 import { useInventory } from '@/store';
-import { useEffect, useRef } from 'react';
+import { MouseEventHandler, useEffect, useMemo, useRef } from 'react';
 
 interface Props {
   order: number;
@@ -10,50 +10,51 @@ interface Props {
 
 const InventoryItem = ({ dragItem, setDragItem, order, ...item }: InventoryItemType & Props) => {
   const swapItem = useInventory((state) => state.swapItem);
-  const ref = useRef<HTMLDivElement>(null);
-  const position = 'type' in item && item.type ? getResourceAssetPosition(item.type) : null;
+  const splitItem = useInventory((state) => state.splitItem);
 
-  useEffect(() => {
-    const inventoryItem = ref.current;
+  const position = useMemo(() => {
+    return item.type ? getResourceAssetPosition(item.type) : null;
+  }, [item.type]);
 
-    const onDragOver = (e: MouseEvent) => {
-      e.preventDefault();
-    };
+  const onClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
+    if (e.shiftKey) {
+      splitItem(order);
+    }
+  };
 
-    const onDrag = () => {
-      setDragItem(order);
-    };
-    const onDrop = () => {
-      if (typeof dragItem !== 'number') return;
-      swapItem(dragItem, order);
-      setDragItem(undefined);
-    };
+  const onDragOver: MouseEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
+  };
 
-    inventoryItem?.addEventListener('drag', onDrag);
-    inventoryItem?.addEventListener('drop', onDrop);
-    inventoryItem?.addEventListener('dragover', onDragOver);
+  const onDrag = () => {
+    setDragItem(order);
+  };
+  const onDrop = () => {
+    if (typeof dragItem !== 'number') return;
+    swapItem(dragItem, order);
+    setDragItem(undefined);
+  };
 
-    return () => {
-      inventoryItem?.removeEventListener('drag', onDrag);
-      inventoryItem?.removeEventListener('drop', onDrop);
-      inventoryItem?.removeEventListener('dragover', onDragOver);
-    };
-  }, [dragItem, item, order, setDragItem, swapItem]);
+  const itemStyle: React.CSSProperties = {
+    width: ASSET_SIZE,
+    height: ASSET_SIZE,
+    backgroundImage: item.type ? 'url("/itemset.png")' : 'none',
+    backgroundPosition: position ? `${position.x}px ${position.y}px` : '0 0',
+  };
 
   return (
-    <div className="relative flex items-center justify-center w-10 h-10 border rounded-lg" ref={ref} draggable>
-      <div
-        style={
-          {
-            order: order,
-            width: ASSET_SIZE,
-            height: ASSET_SIZE,
-            backgroundImage: 'type' in item && item.type && 'url("/itemset.png")',
-            backgroundPosition: position && `${position.x}px ${position.y}px`,
-          } as React.CSSProperties
-        }
-      ></div>
-      <div className="absolute bottom-0.5 right-0.5 text-black font-semibold">{item.quantity ? `x${item.quantity}` : ''}</div>
+    <div
+      className="relative flex items-center justify-center w-10 h-10 border rounded-lg"
+      draggable={!!item.type}
+      onClick={onClick}
+      onDrag={onDrag}
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+    >
+      {item.type ? <div style={itemStyle} /> : null}
+
+      {item.quantity && item.quantity > 1 ? <div className="absolute bottom-0.5 right-0.5 text-black font-semibold text-xs">x{item.quantity}</div> : null}
     </div>
   );
 };
