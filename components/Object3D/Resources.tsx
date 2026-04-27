@@ -3,7 +3,7 @@ import { Resource } from '@/types/resource';
 import { Html } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
 import { forwardRef } from 'react';
-import { Object3D, Vector3 } from 'three';
+import { Object3D } from 'three';
 
 interface Props {
   targets: string[];

@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { Object3D, Raycaster } from 'three';
 import { useInventory } from '@/store';
-import { getRespawnResource, initialSpawn, ResourceType } from '@/lib/resource';
+import { getRespawnResource, initialSpawn } from '@/lib/resource';
 import { RapierRigidBody } from '@react-three/rapier';
 import { handleAttack } from '@/lib/attack';
 import { handleAnimation } from '@/lib/animation';
