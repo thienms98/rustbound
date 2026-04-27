@@ -1,26 +1,34 @@
-import { ASSET_SIZE, getResourceAssetPosition, splitSlot, type InventoryItem as InventoryItemType } from '@/lib/inventory';
+import { ASSET_SIZE, getResourceAssetPosition, splitSlot, type InventorySlot as InventoryItemType } from '@/lib/inventory';
+import { cn } from '@/lib/utils';
 import { useInventory } from '@/store';
-import { MouseEventHandler, useEffect, useMemo, useRef } from 'react';
+import { MouseEventHandler, useMemo } from 'react';
 
 interface Props {
+  item: InventoryItemType;
   order: number;
-  dragItem?: number;
-  setDragItem: React.Dispatch<React.SetStateAction<number | undefined>>;
+  state: {
+    dragItem?: number;
+    setDragItem: React.Dispatch<React.SetStateAction<number | undefined>>;
+    selectedItem?: string;
+    setSelectedItem: React.Dispatch<React.SetStateAction<string | undefined>>;
+  };
 }
 
-const InventoryItem = ({ dragItem, setDragItem, order, ...item }: InventoryItemType & Props) => {
+const InventoryItem = ({ state: { dragItem, setDragItem, selectedItem, setSelectedItem }, order, item }: Props) => {
   const swapItem = useInventory((state) => state.swapItem);
   const splitItem = useInventory((state) => state.splitItem);
 
   const position = useMemo(() => {
-    return item.type ? getResourceAssetPosition(item.type) : null;
-  }, [item.type]);
+    return item ? getResourceAssetPosition(item.type) : null;
+  }, [item]);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     if (e.shiftKey) {
       splitItem(order);
     }
+
+    setSelectedItem(item?.id);
   };
 
   const onDragOver: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -39,22 +47,25 @@ const InventoryItem = ({ dragItem, setDragItem, order, ...item }: InventoryItemT
   const itemStyle: React.CSSProperties = {
     width: ASSET_SIZE,
     height: ASSET_SIZE,
-    backgroundImage: item.type ? 'url("/itemset.png")' : 'none',
+    backgroundImage: item ? 'url("/itemset.png")' : 'none',
     backgroundPosition: position ? `${position.x}px ${position.y}px` : '0 0',
   };
 
   return (
     <div
-      className="relative flex items-center justify-center w-10 h-10 border rounded-lg"
-      draggable={!!item.type}
+      className={cn(
+        'relative flex items-center justify-center size-16 border rounded-lg cursor-pointer',
+        item && item.id === selectedItem ? 'border-blue-400 outline-3 outline-blue-400' : '',
+      )}
+      draggable={!!item}
       onClick={onClick}
       onDrag={onDrag}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
-      {item.type ? <div style={itemStyle} /> : null}
+      {item && <div style={itemStyle} />}
 
-      {item.quantity && item.quantity > 1 ? <div className="absolute bottom-0.5 right-0.5 text-black font-semibold text-xs">x{item.quantity}</div> : null}
+      {item && item.quantity > 1 ? <div className="absolute bottom-0.5 right-0.5 text-black font-semibold text-xs">x{item.quantity}</div> : null}
     </div>
   );
 };

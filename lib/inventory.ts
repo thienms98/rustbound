@@ -9,19 +9,13 @@ export type InventoryRule = Record<
   }
 >;
 
-export interface EmptySlot {
-  id: undefined;
-  type: undefined;
-  quantity: number;
-}
-
-export interface InventorySlot {
+export interface InventoryItem {
   id: string;
   type: ResourceType;
   quantity: number;
 }
 
-export type InventoryItem = InventorySlot | EmptySlot;
+export type InventorySlot = InventoryItem | null;
 
 export const MAX_SLOT = 20; // 5 cols * 4 rows
 
@@ -35,7 +29,7 @@ export const resourceInventoryRules: InventoryRule = {
 };
 
 interface InventoryAddPayload {
-  items: InventoryItem[];
+  items: InventorySlot[];
   type: ResourceType;
   quantity: number;
 }
@@ -45,13 +39,13 @@ export enum InventoryErrors {
   EMPTY_SLOT = 'Current slot is empty',
 }
 
-export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayload): InventoryItem[] => {
+export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayload): InventorySlot[] => {
   const newItems = [...items];
   const { maxStacks } = resourceInventoryRules[type];
 
   try {
     while (quantity > 0) {
-      const item = newItems.find((i) => i.type === type && i.quantity < maxStacks);
+      const item = newItems.find((i) => i && i.type === type && i.quantity < maxStacks);
 
       const maxAbleToAdd = item ? maxStacks - item.quantity : maxStacks;
       const toAdd = Math.min(quantity, maxAbleToAdd);
@@ -61,14 +55,7 @@ export const addItemToInventory = ({ items, type, quantity }: InventoryAddPayloa
       else addNewItemSlot({ items: newItems, type, quantity: toAdd });
     }
   } catch (err) {
-    const { message } = err as { message: InventoryErrors };
-    switch (message) {
-      case InventoryErrors.FULL_SLOTS:
-        console.log('full mat rui');
-        break;
-      default:
-        console.log(err);
-    }
+    console.error(err);
   }
 
   return newItems;
@@ -80,7 +67,7 @@ export const addToExistsSlot = (item: InventoryItem, quantity: number) => {
 
 export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) => {
   for (let order = 0; order < MAX_SLOT; order++) {
-    const idx = items.findIndex((i) => !i.type);
+    const idx = items.findIndex((i) => !i);
     if (idx === -1) throw new Error(InventoryErrors.FULL_SLOTS);
 
     items[idx] = {
@@ -92,32 +79,27 @@ export const addNewItemSlot = ({ items, quantity, type }: InventoryAddPayload) =
   }
 };
 
-export const swapInventoryItem = ({ items, source, target }: { items: InventoryItem[]; source: number; target: number }) => {
+export const swapInventoryItem = ({ items, source, target }: { items: InventorySlot[]; source: number; target: number }) => {
   const newItems = [...items];
   const sourceItem = newItems[source];
   const targetItem = newItems[target];
 
-  if (!sourceItem.id) return;
+  if (!sourceItem) return;
 
-  if (sourceItem.type === targetItem.type && targetItem.type) {
+  if (targetItem && sourceItem.type === targetItem.type) {
     const { maxStacks } = resourceInventoryRules[targetItem.type];
     const newTargetQty = Math.min(maxStacks, targetItem.quantity + sourceItem.quantity);
     const newSourceQty = sourceItem.quantity - (newTargetQty - targetItem.quantity);
 
-    newItems[target].quantity = newTargetQty;
-    if (!newSourceQty)
-      newItems[source] = {
-        id: undefined,
-        type: undefined,
-        quantity: 0,
-      };
-    else newItems[source].quantity = newSourceQty;
+    newItems[target]!.quantity = newTargetQty;
+    if (!newSourceQty) newItems[source] = null;
+    else newItems[source]!.quantity = newSourceQty;
 
     return newItems;
   }
 
-  newItems[target] = { ...items[source] };
-  newItems[source] = { ...items[target] };
+  newItems[target] = items[source] ? { ...items[source] } : items[source];
+  newItems[source] = items[target] ? { ...items[target] } : items[target];
   return newItems;
 };
 
@@ -136,12 +118,14 @@ export const getResourceAssetPosition = (type: ResourceType) => {
   };
 };
 
-export const splitSlot = (items: InventoryItem[], slot: number) => {
+export const splitSlot = (items: InventorySlot[], slot: number) => {
+  console.log('🚀 ~ splitSlot ~ items:', items);
   try {
     const currentSlot = items[slot];
     if (!currentSlot || !currentSlot.type || currentSlot.quantity <= 1) throw new Error(InventoryErrors.EMPTY_SLOT);
 
-    const emptySlotIdx = items.findIndex((i) => !i.type);
+    const emptySlotIdx = items.findIndex((i) => !i);
+    console.log(emptySlotIdx);
     if (emptySlotIdx === -1) throw new Error(InventoryErrors.FULL_SLOTS);
 
     const splitQty = Math.round(currentSlot.quantity / 2);

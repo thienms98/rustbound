@@ -1,21 +1,25 @@
-import { addItemToInventory, InventoryItem, MAX_SLOT, splitSlot, swapInventoryItem } from '@/lib/inventory';
+import { addItemToInventory, InventorySlot, MAX_SLOT, splitSlot, swapInventoryItem } from '@/lib/inventory';
 import { ResourceType } from '@/lib/resource';
 import { v4 } from 'uuid';
 import { create } from 'zustand';
 
 interface Inventory {
-  items: InventoryItem[];
+  items: InventorySlot[];
   addItem: (type: ResourceType, quantity: number) => void;
   swapItem: (source: number, target: number) => void;
   splitItem: (index: number) => void;
 }
 
 export const useInventory = create<Inventory>((set) => ({
-  items: Array.from({ length: MAX_SLOT }).map((_, i) => ({
-    id: i < 4 ? v4() : undefined,
-    type: i < 2 ? ResourceType.ROCK : i < 4 ? ResourceType.TREE : undefined,
-    quantity: i < 4 ? 2 : 0,
-  })),
+  items: Array.from({ length: MAX_SLOT }).map((_, i) =>
+    i < 4
+      ? {
+          id: v4(),
+          type: i < 2 ? ResourceType.ROCK : ResourceType.TREE,
+          quantity: 2,
+        }
+      : null,
+  ),
   addItem(type, quantity) {
     set((state) => ({
       items: addItemToInventory({ items: [...state.items], quantity, type }),

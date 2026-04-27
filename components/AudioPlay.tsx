@@ -14,11 +14,11 @@ const trackLists = [
   '/audio/Village_Market.mp3',
 ];
 
-const randomTrack = (() => Math.floor(Math.random() * trackLists.length))();
+// const randomTrack = (() => Math.floor(Math.random() * trackLists.length))();
+const randomTrack = 8;
 
 const AudioPlay = () => {
   const [track, setTrack] = useState(randomTrack);
-  console.log('🚀 ~ AudioPlay ~ track:', track);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(true);
@@ -112,7 +112,7 @@ const AudioPlay = () => {
     <div className="mt-auto">
       <div className="flex gap-3">
         <ChevronFirst strokeWidth={1} onClick={() => changeTrack(-1)} />
-        {isPlaying ? <Pause strokeWidth={1} onClick={() => setIsPlaying(false)} /> : <Play strokeWidth={1} onClick={() => setIsPlaying(true)} />}
+        {isPlaying ? <Pause fill="black" strokeWidth={1} onClick={() => setIsPlaying(false)} /> : <Play fill="black" strokeWidth={1} onClick={() => setIsPlaying(true)} />}
         <ChevronLast strokeWidth={1} onClick={() => changeTrack(1)} />
       </div>
       {trackLists[track]?.split('/').at(-1)}
