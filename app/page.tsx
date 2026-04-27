@@ -1,33 +1,37 @@
 'use client';
 
-import Floor from '@/components/Object3D/Ground';
 import { Canvas } from '@react-three/fiber';
-import { Environment, OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls, Sky, Stats } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
 import PlayerController from '@/components/PlayerController';
 import { Suspense } from 'react';
+import ErrorBoundary from '@/app/custom-error-boundary';
+import { Ground } from '@/components';
 import Panel from '@/components/Panel';
 
 export default function Home() {
   return (
-    <main className="w-screen h-screen">
-      <Canvas camera={{ fov: 30 }}>
-        <Suspense>
-          <Physics>
-            <Floor />
-            <PlayerController />
-          </Physics>
-        </Suspense>
+    <ErrorBoundary title="Dashboard Error">
+      <main className="w-screen h-screen">
+        <Canvas camera={{ fov: 30 }}>
+          <Suspense>
+            <Physics>
+              <Ground />
+              <PlayerController />
+            </Physics>
+          </Suspense>
 
-        <ambientLight />
-        <spotLight />
+          <ambientLight />
+          <spotLight position={[0, 100, 0]} />
+          <Sky sunPosition={[100, 20, 100]} />
 
-        <Environment preset="dawn" background />
+          <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
 
-        <Stats />
-        <OrbitControls />
-      </Canvas>
-      <Panel />
-    </main>
+          <Stats />
+          <OrbitControls />
+        </Canvas>
+        <Panel />
+      </main>
+    </ErrorBoundary>
   );
 }

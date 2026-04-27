@@ -1,7 +1,6 @@
 import { ASSET_SIZE, getResourceAssetPosition, type InventoryItem as InventoryItemType } from '@/lib/inventory';
-import { cn } from '@/lib/utils';
-import { useInventory } from '@/store/inventory';
-import { HTMLAttributes, useEffect, useRef } from 'react';
+import { useInventory } from '@/store';
+import { useEffect, useRef } from 'react';
 
 interface Props {
   order: number;
@@ -42,7 +41,7 @@ const InventoryItem = ({ dragItem, setDragItem, order, ...item }: InventoryItemT
   }, [dragItem, item, order, setDragItem, swapItem]);
 
   return (
-    <div className="relative flex items-center justify-center w-10 h-10 border rounded-lg bg-white" ref={ref} draggable>
+    <div className="relative flex items-center justify-center w-10 h-10 border rounded-lg" ref={ref} draggable>
       <div
         style={
           {

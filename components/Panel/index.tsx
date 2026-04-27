@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import AudioPlay from '../AudioPlay';
-import Inventory from './Inventory.tsx';
+import Inventory from './Inventory';
 
 const Panel = () => {
   const [panel, setPanel] = useState(false);
