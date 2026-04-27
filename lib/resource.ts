@@ -1,8 +1,8 @@
-import { Resource } from "@/components/Object3D/Resources";
-import { Intersection, Object3D, Vector3 } from "three";
-import { v4 } from "uuid";
-import { getDistance } from "./utils";
-import { RapierRigidBody } from "@react-three/rapier";
+import { Intersection, Object3D, Vector3 } from 'three';
+import { v4 } from 'uuid';
+import { getDistance } from './utils';
+import { RapierRigidBody } from '@react-three/rapier';
+import { Resource } from '@/types/resource';
 
 export const MINIMUM_DISTANCE = 5;
 export const MAX_HP = 5;
@@ -10,19 +10,19 @@ export const MAX_SPAWN_ATTEMPS = 5;
 const HP_MIN_DISTANCE = 10;
 
 export enum ResourceType {
-  TREE = "tree",
-  ROCK = "rock"
+  TREE = 'tree',
+  ROCK = 'rock',
 }
 
 const restrictedAreas = {
   [ResourceType.TREE]: [
     [-40, -10],
-    [-40, -10]
+    [-40, -10],
   ],
   [ResourceType.ROCK]: [
     [20, 50],
-    [10, 40]
-  ]
+    [10, 40],
+  ],
 };
 
 export const initialSpawn = (resources: Resource[] = []) => {
@@ -37,20 +37,13 @@ export const initialSpawn = (resources: Resource[] = []) => {
   return resources;
 };
 
-const spawnResource = (
-  type: ResourceType,
-  resources: Resource[],
-  restrictedArea?: number[][]
-): Resource[] => {
+const spawnResource = (type: ResourceType, resources: Resource[], restrictedArea?: number[][]): Resource[] => {
   let attempts = MAX_SPAWN_ATTEMPS;
   while (attempts) {
     attempts--;
 
     const randomPosition = getRandomPosition(restrictedArea);
-    const validPosition = resources.every(
-      (r) =>
-        !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE
-    );
+    const validPosition = resources.every((r) => !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE);
     if (!validPosition) continue;
 
     const newResource = {
@@ -59,7 +52,7 @@ const spawnResource = (
       position: randomPosition,
       hp: MAX_HP,
       maxHp: MAX_HP,
-      alive: true
+      alive: true,
     };
     return [...resources, newResource];
   }
@@ -69,16 +62,14 @@ const spawnResource = (
 
 export const getRespawnResource = (resources: Resource[]) => {
   return resources.map((r) => {
+    const type = r.type;
     if (r.alive || (r.respawnAt && r.respawnAt >= Date.now())) return r;
     let attempts = MAX_SPAWN_ATTEMPS;
     while (attempts) {
       attempts--;
 
-      const randomPosition = getRandomPosition(restrictedAreas[r.type]);
-      const validPosition = resources.every(
-        (r) =>
-          !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE
-      );
+      const randomPosition = getRandomPosition(restrictedAreas[type]);
+      const validPosition = resources.every((r) => !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE);
       if (!validPosition) continue;
 
       return {
@@ -86,7 +77,7 @@ export const getRespawnResource = (resources: Resource[]) => {
         position: randomPosition,
         hp: MAX_HP,
         maxHp: MAX_HP,
-        alive: true
+        alive: true,
       };
     }
 
@@ -97,8 +88,8 @@ export const getRespawnResource = (resources: Resource[]) => {
 export const getRandomPosition = (
   restrictedArea = [
     [-50, 50],
-    [-50, 50]
-  ]
+    [-50, 50],
+  ],
 ) => {
   const [[x1, x2], [z1, z2]] = restrictedArea;
 
@@ -107,24 +98,11 @@ export const getRandomPosition = (
   const xRange = Math.abs(x2 - x1);
   const zRange = Math.abs(z2 - z1);
 
-  return new Vector3(
-    xMin + Math.random() * xRange,
-    3,
-    zMin + Math.random() * zRange
-  );
+  return new Vector3(xMin + Math.random() * xRange, 3, zMin + Math.random() * zRange);
 };
 
-export const getCloseIntersects = (
-  char: RapierRigidBody,
-  intersects: Intersection<Object3D>[],
-  distance = HP_MIN_DISTANCE
-) => {
+export const getCloseIntersects = (char: RapierRigidBody, intersects: Intersection<Object3D>[], distance = HP_MIN_DISTANCE) => {
   const { x, y, z } = char.translation();
 
-  return intersects
-    .filter(
-      (item) =>
-        getDistance(item.object.position, new Vector3(x, y, z)) < distance
-    )
-    .map((i) => i.object.userData.id);
+  return intersects.filter((item) => getDistance(item.object.position, new Vector3(x, y, z)) < distance).map((i) => i.object.userData.id);
 };

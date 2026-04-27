@@ -1,10 +1,10 @@
-import { Resource } from '@/components/Object3D/Resources';
 import { Object3D, Vector3 } from 'three';
-import { ResourceType } from './resource';
 import { RapierRigidBody } from '@react-three/rapier';
 import { keysContainsAction } from './utils';
 import { CharacterStats } from '@/types/character';
 import { ACTION_KEYS } from './keyboard';
+import { Resource } from '@/types/resource';
+import { ResourceType } from './resource';
 
 export const ATTACK_COOLDOWN = 0.5;
 export const ATTACK_RANGE = 10;
@@ -30,7 +30,7 @@ export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<R
   const inRangeObjects = getInRangeObjects(payload).map((i) => String(i.userData.id));
   stats.attackCooldown = ATTACK_COOLDOWN;
 
-  const harvested: Record<ResourceType, number> = {
+  const storage: Record<ResourceType, number> = {
     [ResourceType.TREE]: 0,
     [ResourceType.ROCK]: 0,
   };
@@ -46,8 +46,8 @@ export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<R
       alive = false;
       respawnAt = Date.now() + RESPAWN_TIME;
 
-      harvested[res.type]++;
-      if (!harvested[res.type]) harvested[res.type] = 1;
+      storage[res.type]++;
+      if (!storage[res.type]) storage[res.type] = 1;
     }
 
     return {
@@ -58,7 +58,7 @@ export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<R
     };
   });
 
-  onHarvest(harvested);
+  onHarvest(storage);
 
   return { resources: newResources, inRangeObjects };
 };

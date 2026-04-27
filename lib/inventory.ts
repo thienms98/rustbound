@@ -1,4 +1,4 @@
-import InventoryItem from '@/components/InventoryItem';
+import InventoryItem from '@/components/Panel/Inventory/InventoryItem';
 import { ResourceType } from './resource';
 import { v4 } from 'uuid';
 

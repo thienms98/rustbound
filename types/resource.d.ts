@@ -1,3 +1,5 @@
+import { ResourceType } from '@/lib/resource';
+
 export interface Resource {
   id: string;
   type: ResourceType;
