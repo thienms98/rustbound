@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Sky, Stats } from '@react-three/drei';
-import { Physics } from '@react-three/rapier';
-import PlayerController from '@/components/PlayerController';
-import { Suspense } from 'react';
-import ErrorBoundary from '@/app/custom-error-boundary';
-import { Ground } from '@/components';
-import Panel from '@/components/Panel';
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Sky, Stats } from "@react-three/drei";
+import { Physics } from "@react-three/rapier";
+import PlayerController from "@/components/PlayerController";
+import { Suspense } from "react";
+import ErrorBoundary from "@/app/custom-error-boundary";
+import { Ground, Panel } from "@/components";
 
 export default function Home() {
   return (

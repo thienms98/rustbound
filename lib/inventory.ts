@@ -155,7 +155,6 @@ export const getResourceAssetPosition = (type: GeneralType) => {
 };
 
 export const splitSlot = (items: InventorySlot[], slot: number) => {
-  console.log("🚀 ~ splitSlot ~ items:", items);
   try {
     const currentSlot = items[slot];
     if (!currentSlot || !currentSlot.type || currentSlot.quantity <= 1)

@@ -9,7 +9,7 @@ interface Stats {
 
 export const useStats = create<Stats>((set) => ({
   stats: {
-    balance: 2000
+    balance: 20000000
   },
   changeBalance: (amount: number) =>
     set((state) => ({
