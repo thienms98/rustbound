@@ -2,6 +2,7 @@ import Head from "next/head";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <link rel="preload" href="/itemset.png" as="image" />
       </Head>
       <body className="flex flex-col min-h-full">{children}</body>
+      <Toaster />
     </html>
   );
 }

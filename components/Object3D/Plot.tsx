@@ -1,5 +1,5 @@
 import { GROWING_STAGE, type Plot as PlotType } from "@/lib/farming";
-import { useFarm } from "@/store/plots";
+import { useFarm } from "@/store";
 import { Edges, Html } from "@react-three/drei";
 import { ThreeElements } from "@react-three/fiber";
 import { useEffect, useState } from "react";
@@ -71,4 +71,4 @@ const Plot = ({
   );
 };
 
-export { Plot };
+export default Plot;

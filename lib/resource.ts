@@ -1,8 +1,8 @@
-import { Resource } from "@/components/Object3D/Resources";
 import { Intersection, Object3D, Vector3 } from "three";
 import { v4 } from "uuid";
 import { getDistance } from "./utils";
 import { RapierRigidBody } from "@react-three/rapier";
+import { Resource } from "@/types/resource";
 
 export const MINIMUM_DISTANCE = 5;
 export const MAX_HP = 5;
@@ -13,6 +13,21 @@ export enum ResourceType {
   TREE = "tree",
   ROCK = "rock"
 }
+
+export enum SeedType {
+  CARROT_SEED = "carrot seed",
+  WHEET_SEED = "wheet seed"
+}
+
+export enum TreeType {
+  APPLE_TREE = "apple tree"
+}
+
+export enum UtilityType {
+  FERTILIZER = "fertilizer"
+}
+
+export type GeneralType = ResourceType | SeedType | TreeType | UtilityType;
 
 const restrictedAreas = {
   [ResourceType.TREE]: [
@@ -69,12 +84,13 @@ const spawnResource = (
 
 export const getRespawnResource = (resources: Resource[]) => {
   return resources.map((r) => {
+    const type = r.type;
     if (r.alive || (r.respawnAt && r.respawnAt >= Date.now())) return r;
     let attempts = MAX_SPAWN_ATTEMPS;
     while (attempts) {
       attempts--;
 
-      const randomPosition = getRandomPosition(restrictedAreas[r.type]);
+      const randomPosition = getRandomPosition(restrictedAreas[type]);
       const validPosition = resources.every(
         (r) =>
           !r.alive || getDistance(r.position, randomPosition) > MINIMUM_DISTANCE

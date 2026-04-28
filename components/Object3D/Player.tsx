@@ -49,4 +49,4 @@ const Player = forwardRef<RapierRigidBody, { animation: string }>(
 );
 
 Player.displayName = "Player";
-export { Player };
+export default Player;

@@ -1,13 +1,12 @@
 "use client";
 
-import { Ground } from "@/components/Object3D";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import PlayerController from "@/components/PlayerController";
-import Inventory from "@/components/Inventory";
 import { Suspense } from "react";
 import ErrorBoundary from "@/app/custom-error-boundary";
+import { Ground, Panel } from "@/components";
 
 export default function Home() {
   return (
@@ -30,7 +29,7 @@ export default function Home() {
           <Stats />
           <OrbitControls />
         </Canvas>
-        <Inventory />
+        <Panel />
       </main>
     </ErrorBoundary>
   );

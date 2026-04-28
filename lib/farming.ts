@@ -30,6 +30,23 @@ export interface Plant {
 
 export const INTERACT_RANGE = 6;
 
+export const plants: Record<string, Plant> = {
+  carrot: {
+    id: v4(),
+    name: "carrot",
+    growthTime: 30000,
+    category: "crop",
+    type: "crop"
+  },
+  potato: {
+    id: v4(),
+    name: "potato",
+    growthTime: 60000,
+    category: "crop",
+    type: "crop"
+  }
+};
+
 export const raycastPlots = (payload: {
   player: RapierRigidBody;
   keys: Set<string>;
