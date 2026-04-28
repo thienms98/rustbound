@@ -31,4 +31,4 @@ const Ground = () => {
   );
 };
 
-export default Ground;
+export { Ground };

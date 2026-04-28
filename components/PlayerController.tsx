@@ -1,15 +1,27 @@
-import { Player, Resources, Farm } from '@/components';
-import { initialStats, updateCameraPosition, updatePosition, getDirections, updateRotation } from '@/lib/movement';
-import { useFrame } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
-import { Object3D, Raycaster } from 'three';
-import { useInventory } from '@/store';
-import { getRespawnResource, initialSpawn } from '@/lib/resource';
-import { RapierRigidBody } from '@react-three/rapier';
-import { handleAttack } from '@/lib/attack';
-import { handleAnimation } from '@/lib/animation';
-import { GROWING_STAGE, plantCrop, plants, Plot, raycastPlots } from '@/lib/farming';
-import { useFarm, useKeyboard } from '@/store';
+import { Player, Resources, Farm } from "@/components";
+import {
+  initialStats,
+  updateCameraPosition,
+  updatePosition,
+  getDirections,
+  updateRotation
+} from "@/lib/movement";
+import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Object3D, Raycaster } from "three";
+import { useInventory } from "@/store";
+import { getRespawnResource, initialSpawn } from "@/lib/resource";
+import { RapierRigidBody } from "@react-three/rapier";
+import { handleAttack } from "@/lib/attack";
+import { handleAnimation } from "@/lib/animation";
+import {
+  GROWING_STAGE,
+  plantCrop,
+  plants,
+  Plot,
+  raycastPlots
+} from "@/lib/farming";
+import { useFarm, useKeyboard } from "@/store";
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -25,7 +37,9 @@ const PlayerController = () => {
   // const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
 
-  const [animation, setAnimation] = useState<'root|Girl_Idle' | 'root|Girl_walk' | 'root|Girl_run'>('root|Girl_Idle');
+  const [animation, setAnimation] = useState<
+    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
+  >("root|Girl_Idle");
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -33,7 +47,7 @@ const PlayerController = () => {
     if (!playerRef.current) return;
 
     const direction = getDirections(keys);
-    const isSprint = keys.has('shift');
+    const isSprint = keys.has("shift");
     const payload = {
       player: playerRef.current,
       objects: objectsRef.current ? objectsRef.current.children : [],
@@ -45,7 +59,7 @@ const PlayerController = () => {
       delta,
       camera,
       direction,
-      isSprint,
+      isSprint
     };
 
     updateRotation(payload);
@@ -71,7 +85,7 @@ const PlayerController = () => {
 
     const target = raycastPlots(payload);
     setTargets(target ? [target.userData.id] : []);
-    if (target && keys.has('e')) {
+    if (target && keys.has("e")) {
       const plot = target.userData as Plot;
       if (plot.plant && plot.plantedAt) {
         const now = Date.now();
@@ -82,7 +96,7 @@ const PlayerController = () => {
             ...plot,
             stage: GROWING_STAGE.SOIL,
             plant: undefined,
-            plantedAt: undefined,
+            plantedAt: undefined
           });
         } else {
           // console.log(havestTime - now, "ms left");
@@ -103,12 +117,12 @@ const PlayerController = () => {
       keys.delete(e.key.toLowerCase());
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keyup", onKeyUp);
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, []);
 
