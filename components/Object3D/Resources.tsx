@@ -65,4 +65,4 @@ const Resources = forwardRef<Object3D, Props>(({ targets, resources }, ref) => {
 });
 
 Resources.displayName = "Resources";
-export { Resources };
+export default Resources;
