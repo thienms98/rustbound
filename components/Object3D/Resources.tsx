@@ -1,5 +1,5 @@
 import { ResourceType } from "@/lib/resource";
-import { Resource } from "@/types/resource";
+import { Resource } from "@/types/entity";
 import { Html } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import { forwardRef } from "react";

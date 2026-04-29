@@ -7,9 +7,8 @@ export type Velocity = {
   z: number;
 };
 
-export const MAX_SPEED = 12;
-export const MOVEMENT_SPEED = 30;
-export const SPRINT_SPEED = 40;
+export const MOVEMENT_SPEED = 1;
+export const SPRINT_SPEED = 10;
 export const ROTATE_SPEED = Math.PI / 180;
 
 export const initialStats: CharacterStats = {

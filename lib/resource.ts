@@ -2,7 +2,7 @@ import { Intersection, Object3D, Vector3 } from "three";
 import { v4 } from "uuid";
 import { getDistance } from "./utils";
 import { RapierRigidBody } from "@react-three/rapier";
-import { Resource } from "@/types/resource";
+import { Resource } from "@/types/entity";
 
 export const MINIMUM_DISTANCE = 5;
 export const MAX_HP = 5;

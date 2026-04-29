@@ -39,7 +39,7 @@ const Player = forwardRef<RapierRigidBody, { animation: string }>(
           linearDamping={5}
           angularDamping={10}
         >
-          <primitive object={scene} position={[0, 0, 0]} scale={3} />
+          <primitive object={scene} position={[0, 0, 0]} />
         </RigidBody>
       </>
     );
