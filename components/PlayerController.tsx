@@ -38,8 +38,19 @@ const PlayerController = () => {
   const [targets, setTargets] = useState<string[]>([]);
 
   const [animation, setAnimation] = useState<
-    "root|Girl_Idle" | "root|Girl_walk" | "root|Girl_run"
-  >("root|Girl_Idle");
+    | "idle"
+    | "walking"
+    | "running"
+    | "crouch"
+    | "crouch_walk"
+    | "running_jump"
+    | "standing_jump"
+    | "drinking"
+    | "sitting_idle"
+    | "pick_fruit"
+    | "pick_fruit_low"
+    | "pick_fruit_high"
+  >("idle");
 
   const raycasterRef = useRef(new Raycaster());
 

@@ -1,10 +1,13 @@
-import { Vector2 } from 'three';
+import { Vector2 } from "three";
 
-export const handleAnimation = (payload: { keys: Set<string>; direction: Vector2 }) => {
+export const handleAnimation = (payload: {
+  keys: Set<string>;
+  direction: Vector2;
+}) => {
   const { direction, keys } = payload;
-  const isSprint = keys.has('shift');
+  const isSprint = keys.has("shift");
 
-  if (!direction.length()) return 'root|Girl_Idle';
-  if (isSprint) return 'root|Girl_run';
-  else return 'root|Girl_walk';
+  if (!direction.length()) return "idle";
+  if (isSprint) return "running";
+  else return "walking";
 };

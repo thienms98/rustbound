@@ -5,21 +5,19 @@ import { SkeletonUtils } from "three-stdlib";
 
 const Player = forwardRef<RapierRigidBody, { animation: string }>(
   ({ animation }, ref) => {
-    const { scene, animations } = useGLTF("/girl.glb");
-    const { scene: pickaxeScene } = useGLTF("/3d/pickaxe.glb");
+    const { scene, animations } = useGLTF("/AJ.glb");
+    // const { scene: pickaxeScene } = useGLTF("/3d/pickaxe.glb");
     const { actions } = useAnimations(animations, scene);
 
     useEffect(() => {
-      const handBone = scene.getObjectByName("handr");
-      const pickaxe = pickaxeScene.getObjectByName("pickaxe");
-
-      if (!handBone || !pickaxe) return;
-      const pickaxeInstance = SkeletonUtils.clone(pickaxe);
-      pickaxeInstance.position.set(0, 0, 0);
-      pickaxeInstance.rotation.set(0, 0, 0);
-      pickaxeInstance.scale.set(2, 2, 2);
-
-      handBone.add(pickaxeInstance);
+      // const handBone = scene.getObjectByName("handr");
+      // const pickaxe = pickaxeScene.getObjectByName("pickaxe");
+      // if (!handBone || !pickaxe) return;
+      // const pickaxeInstance = SkeletonUtils.clone(pickaxe);
+      // pickaxeInstance.position.set(0, 0, 0);
+      // pickaxeInstance.rotation.set(0, 0, 0);
+      // pickaxeInstance.scale.set(2, 2, 2);
+      // handBone.add(pickaxeInstance);
     }, []);
 
     useEffect(() => {
@@ -41,7 +39,7 @@ const Player = forwardRef<RapierRigidBody, { animation: string }>(
           linearDamping={5}
           angularDamping={10}
         >
-          <primitive object={scene} position={[0, 0, 0]} />
+          <primitive object={scene} position={[0, 0, 0]} scale={3} />
         </RigidBody>
       </>
     );
