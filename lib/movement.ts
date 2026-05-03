@@ -7,8 +7,7 @@ export type Velocity = {
   z: number;
 };
 
-export const MAX_SPEED = 12;
-export const MOVEMENT_SPEED = 0.5;
+export const MOVEMENT_SPEED = 1;
 export const SPRINT_SPEED = 10;
 export const ROTATE_SPEED = Math.PI / 180;
 
@@ -95,9 +94,9 @@ export const updateRotation = ({
 };
 
 const CAMERA_OFFSET = {
-  x: -5,
-  y: 80,
-  z: 40
+  x: -10,
+  y: 30,
+  z: 60
 };
 
 export const updateCameraPosition = (payload: {

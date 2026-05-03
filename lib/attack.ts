@@ -1,10 +1,10 @@
-import { Object3D, Vector3 } from 'three';
-import { RapierRigidBody } from '@react-three/rapier';
-import { keysContainsAction } from './utils';
-import { CharacterStats } from '@/types/character';
-import { ACTION_KEYS } from './keyboard';
-import { Resource } from '@/types/resource';
-import { ResourceType } from './resource';
+import { Object3D, Vector3 } from "three";
+import { RapierRigidBody } from "@react-three/rapier";
+import { keysContainsAction } from "./utils";
+import { CharacterStats } from "@/types/character";
+import { ACTION_KEYS } from "./keyboard";
+import { Resource } from "@/types/entity";
+import { ResourceType } from "./resource";
 
 export const ATTACK_COOLDOWN = 0.5;
 export const ATTACK_RANGE = 10;
@@ -21,18 +21,24 @@ interface AttackPayload {
   delta: number;
 }
 
-export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<ResourceType, number>) => void) => {
+export const handleAttack = (
+  payload: AttackPayload,
+  onHarvest: (items: Record<ResourceType, number>) => void
+) => {
   const { stats, keys, resources } = payload;
   stats.attackCooldown = handleAttackCooldown(payload);
 
-  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0) return null;
+  if (!keysContainsAction(keys, ACTION_KEYS.ATTACK) || stats.attackCooldown > 0)
+    return null;
 
-  const inRangeObjects = getInRangeObjects(payload).map((i) => String(i.userData.id));
+  const inRangeObjects = getInRangeObjects(payload).map((i) =>
+    String(i.userData.id)
+  );
   stats.attackCooldown = ATTACK_COOLDOWN;
 
   const storage: Record<ResourceType, number> = {
     [ResourceType.TREE]: 0,
-    [ResourceType.ROCK]: 0,
+    [ResourceType.ROCK]: 0
   };
 
   const newResources = [...resources].map((res) => {
@@ -54,7 +60,7 @@ export const handleAttack = (payload: AttackPayload, onHarvest: (items: Record<R
       ...res,
       hp: newHp,
       alive,
-      respawnAt,
+      respawnAt
     };
   });
 
@@ -88,7 +94,11 @@ export const getInRangeObjects = (payload: AttackPayload) => {
   return hits;
 };
 
-export const onObjectHit = (object: Object3D, resources: Resource[], onDead?: (type: ResourceType, quantity: number) => void) => {
+export const onObjectHit = (
+  object: Object3D,
+  resources: Resource[],
+  onDead?: (type: ResourceType, quantity: number) => void
+) => {
   const newResources = [...resources];
   const item = resources.find((item) => item.id === object.userData.id);
   if (!item) return newResources;

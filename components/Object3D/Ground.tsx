@@ -1,34 +1,41 @@
-import { Sky, useTexture } from "@react-three/drei";
+import { generateFromLayout, MAIN_LAYOUT } from "@/lib/tile";
 import { RigidBody } from "@react-three/rapier";
-import { RepeatWrapping } from "three";
+import { memo } from "react";
 
-const Ground = () => {
-  const texture = useTexture("./Ground.png", (t) => {
-    t.wrapS = RepeatWrapping;
-    t.wrapT = RepeatWrapping;
-    t.repeat.set(50, 50);
-  });
-
-  return (
-    <RigidBody type="fixed">
-      {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-        <planeGeometry args={[300, 300]} />
-        <meshStandardMaterial map={texture} />
-      </mesh> */}
-
-      {/* Ground chính */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="green" />
-      </mesh>
-
-      {/* Ground phụ */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
-        <planeGeometry args={[400, 400]} />
-        <meshBasicMaterial color="#88aa88" />
-      </mesh>
-    </RigidBody>
-  );
+const color = {
+  soil: "brown",
+  water: "blue",
+  grass: "green"
 };
 
+const width = 50,
+  height = 50;
+const Ground = memo(() => {
+  const grid = generateFromLayout(MAIN_LAYOUT);
+
+  return (
+    <>
+      <RigidBody type="fixed" colliders="cuboid">
+        <mesh position={[width / 2 - 0.5, -0.5, height / 2 - 0.5]}>
+          <boxGeometry args={[width, 1, height]} />
+          <meshStandardMaterial visible={false} />
+        </mesh>
+      </RigidBody>
+      <group>
+        {grid.map((row, x) => (
+          <group key={x}>
+            {row.map((tile, z) => (
+              <mesh key={x * row.length + z} position={[x, -0.5, z]}>
+                <boxGeometry />
+                <meshStandardMaterial color={color[tile.type]} />
+              </mesh>
+            ))}
+          </group>
+        ))}
+      </group>
+    </>
+  );
+});
+
+Ground.displayName = "Ground";
 export default Ground;

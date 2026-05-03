@@ -7,6 +7,8 @@ import PlayerController from '@/components/PlayerController';
 import { Suspense } from 'react';
 import ErrorBoundary from '@/app/custom-error-boundary';
 import { Ground, Panel } from '@/components';
+import { EntityManager } from '@/components/Object3D/Entities';
+import { INITIAL_ENTITIES } from '@/lib/entity';
 
 export default function Home() {
   return (
@@ -14,8 +16,9 @@ export default function Home() {
       <main className="w-screen h-screen">
         {/* <Canvas camera={{ fov: 30 }}>
           <Suspense>
-            <Physics>
+            <Physics debug>
               <Ground />
+              <EntityManager entities={INITIAL_ENTITIES} />
               <PlayerController />
             </Physics>
           </Suspense>
@@ -23,8 +26,6 @@ export default function Home() {
           <ambientLight />
           <spotLight position={[0, 100, 0]} />
           <Sky sunPosition={[100, 20, 100]} />
-
-          <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
 
           <Stats />
           <OrbitControls />

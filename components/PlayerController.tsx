@@ -25,7 +25,9 @@ const PlayerController = () => {
   // const [resources, setResources] = useState<Resource[]>(initialSpawn());
   const [targets, setTargets] = useState<string[]>([]);
 
-  const [animation, setAnimation] = useState<'root|Girl_Idle' | 'root|Girl_walk' | 'root|Girl_run'>('root|Girl_Idle');
+  const [animation, setAnimation] = useState<
+    'idle' | 'walking' | 'running' | 'crouch' | 'crouch_walk' | 'running_jump' | 'standing_jump' | 'drinking' | 'sitting_idle' | 'pick_fruit' | 'pick_fruit_low' | 'pick_fruit_high'
+  >('idle');
 
   const raycasterRef = useRef(new Raycaster());
 
@@ -69,28 +71,29 @@ const PlayerController = () => {
     // newResources = getRespawnResource(newResources);
     // setResources(newResources);
 
-    const target = raycastPlots(payload);
-    setTargets(target ? [target.userData.id] : []);
-    if (target && keys.has('e')) {
-      const plot = target.userData as Plot;
-      if (plot.plant && plot.plantedAt) {
-        const now = Date.now();
-        const havestTime = plot.plantedAt + plot.plant.growthTime;
+    // const target = raycastPlots(payload);
+    // setTargets(target ? [target.userData.id] : []);
+    // if (target && keys.has("e")) {
+    //   const plot = target.userData as Plot;
+    //   if (plot.plant && plot.plantedAt) {
+    //     const now = Date.now();
+    //     const havestTime = plot.plantedAt + plot.plant.growthTime;
 
-        if (now >= havestTime) {
-          updatePlot({
-            ...plot,
-            stage: GROWING_STAGE.SOIL,
-            plant: undefined,
-            plantedAt: undefined,
-          });
-        } else {
-        }
-      } else {
-        const newPlot = plantCrop(plot, plants.carrot);
-        updatePlot(newPlot);
-      }
-    }
+    //     if (now >= havestTime) {
+    //       updatePlot({
+    //         ...plot,
+    //         stage: GROWING_STAGE.SOIL,
+    //         plant: undefined,
+    //         plantedAt: undefined
+    //       });
+    //     } else {
+    //       // console.log(havestTime - now, "ms left");
+    //     }
+    //   } else {
+    //     const newPlot = plantCrop(plot, plants.carrot);
+    //     updatePlot(newPlot);
+    //   }
+    // }
   });
 
   useEffect(() => {
@@ -114,8 +117,6 @@ const PlayerController = () => {
   return (
     <>
       <Player ref={playerRef} animation={animation} />
-      {/* <Resources ref={objectsRef} targets={targets} resources={resources} /> */}
-      <Farm ref={plotsRef} targets={targets} />
     </>
   );
 };
