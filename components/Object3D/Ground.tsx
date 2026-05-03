@@ -1,11 +1,12 @@
-import { generateFromLayout, MAIN_LAYOUT } from "@/lib/tile";
-import { RigidBody } from "@react-three/rapier";
-import { memo } from "react";
+import { generateFromLayout, MAIN_LAYOUT } from '@/lib/tile';
+import { RigidBody } from '@react-three/rapier';
+import { memo } from 'react';
 
 const color = {
-  soil: "brown",
-  water: "blue",
-  grass: "green"
+  soil: 'brown',
+  water: 'blue',
+  grass: 'green',
+  path: 'black',
 };
 
 const width = 50,
@@ -32,10 +33,34 @@ const Ground = memo(() => {
             ))}
           </group>
         ))}
+        <RigidBody type="fixed" colliders="cuboid">
+          <mesh position={[width / 2 - 0.5, 1.5, -0.75]}>
+            <boxGeometry args={[width, 5, 0.5]}></boxGeometry>
+            <meshStandardMaterial transparent opacity={0}></meshStandardMaterial>
+          </mesh>
+        </RigidBody>
+        <RigidBody type="fixed" colliders="cuboid">
+          <mesh position={[width / 2 - 0.5, 1.5, height - 0.25]}>
+            <boxGeometry args={[width, 5, 0.5]}></boxGeometry>
+            <meshStandardMaterial transparent opacity={0}></meshStandardMaterial>
+          </mesh>
+        </RigidBody>
+        <RigidBody type="fixed" colliders="cuboid">
+          <mesh position={[width - 0.5, 1.5, height / 2 - 0.5]}>
+            <boxGeometry args={[0.5, 5, height + 1]}></boxGeometry>
+            <meshStandardMaterial transparent opacity={0}></meshStandardMaterial>
+          </mesh>
+        </RigidBody>
+        <RigidBody type="fixed" colliders="cuboid">
+          <mesh position={[-0.75, 1.5, height / 2 - 0.5]}>
+            <boxGeometry args={[0.5, 5, height + 1]}></boxGeometry>
+            <meshStandardMaterial transparent opacity={0}></meshStandardMaterial>
+          </mesh>
+        </RigidBody>
       </group>
     </>
   );
 });
 
-Ground.displayName = "Ground";
+Ground.displayName = 'Ground';
 export default Ground;

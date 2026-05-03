@@ -1,4 +1,4 @@
-import { Player, Resources, Farm } from '@/components';
+import { Player, Resources, Farm, Ground } from '@/components';
 import { initialStats, updateCameraPosition, updatePosition, getDirections, updateRotation } from '@/lib/movement';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
@@ -10,6 +10,8 @@ import { handleAttack } from '@/lib/attack';
 import { handleAnimation } from '@/lib/animation';
 import { GROWING_STAGE, plantCrop, plants, Plot, raycastPlots } from '@/lib/farming';
 import { useFarm, useKeyboard } from '@/store';
+import { EntityManager } from './Object3D/Entities';
+import { INITIAL_ENTITIES } from '@/lib/entity';
 
 const PlayerController = () => {
   const addItem = useInventory((state) => state.addItem);
@@ -117,6 +119,10 @@ const PlayerController = () => {
   return (
     <>
       <Player ref={playerRef} animation={animation} />
+
+      <Ground />
+
+      <EntityManager entities={INITIAL_ENTITIES} />
     </>
   );
 };

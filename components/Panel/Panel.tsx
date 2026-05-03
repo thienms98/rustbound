@@ -16,7 +16,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]['id'];
 
 const Panel = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>(0);
   const keys = useKeyboard.getState().keys;
   const balance = useStats((state) => state.stats.balance);

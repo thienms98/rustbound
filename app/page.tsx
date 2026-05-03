@@ -6,19 +6,15 @@ import { Physics } from '@react-three/rapier';
 import PlayerController from '@/components/PlayerController';
 import { Suspense } from 'react';
 import ErrorBoundary from '@/app/custom-error-boundary';
-import { Ground, Panel } from '@/components';
-import { EntityManager } from '@/components/Object3D/Entities';
-import { INITIAL_ENTITIES } from '@/lib/entity';
+import { Panel } from '@/components';
 
 export default function Home() {
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
-        {/* <Canvas camera={{ fov: 30 }}>
+        <Canvas camera={{ fov: 30 }}>
           <Suspense>
             <Physics debug>
-              <Ground />
-              <EntityManager entities={INITIAL_ENTITIES} />
               <PlayerController />
             </Physics>
           </Suspense>
@@ -29,7 +25,7 @@ export default function Home() {
 
           <Stats />
           <OrbitControls />
-        </Canvas> */}
+        </Canvas>
         <Panel />
       </main>
     </ErrorBoundary>
