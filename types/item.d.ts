@@ -1,4 +1,4 @@
-import { GeneralType } from "@/lib/resource";
+import { GeneralType } from '@/lib/resource';
 
 export interface BaseItem {
   id: string;
@@ -8,11 +8,11 @@ export interface BaseItem {
   asset: string;
   price: number;
   sellPrice: number;
-  currency: "coin";
+  currency: 'coin';
 }
 
 export interface ShopItem extends BaseItem {
-  stock: number;
+  stock: number | Infinity;
   restockedAt: Date;
   restockTime: number;
 }

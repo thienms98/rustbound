@@ -1,77 +1,81 @@
-import { SeedType, TreeType, UtilityType } from "@/lib/resource";
-import { cn } from "@/lib/utils";
-import { useInventory } from "@/store";
-import { useStats } from "@/store/stats";
-import { ShopItem } from "@/types/item";
-import { CoinsIcon } from "lucide-react";
-import {
-  FormEventHandler,
-  MouseEventHandler,
-  SubmitEventHandler,
-  useCallback,
-  useState
-} from "react";
-import { toast } from "sonner";
+import { SeedType, TreeType, UtilityType } from '@/lib/resource';
+import { cn } from '@/lib/utils';
+import { useInventory } from '@/store';
+import { useStats } from '@/store/stats';
+import { ShopItem } from '@/types/item';
+import { CoinsIcon } from 'lucide-react';
+import { SubmitEventHandler, useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 const initialItems: ShopItem[] = [
   {
-    id: "CRS",
-    name: "carrot seed",
-    asset: "",
+    id: 'CRS',
+    name: 'carrot seed',
+    asset: '',
     type: SeedType.CARROT_SEED,
     price: 500,
     qty: 1,
     stock: 20,
-    currency: "coin",
+    currency: 'coin',
     restockedAt: new Date(),
     restockTime: 3600000,
-    sellPrice: 0.1 * 5
+    sellPrice: 0.1 * 5,
   },
   {
-    id: "WHS",
-    name: "wheet seed",
+    id: 'WHS',
+    name: 'wheet seed',
     type: SeedType.WHEET_SEED,
-    asset: "",
+    asset: '',
     price: 25,
     qty: 1,
     stock: 5,
-    currency: "coin",
+    currency: 'coin',
     restockedAt: new Date(),
     restockTime: 3600000,
-    sellPrice: 0.1 * 25
+    sellPrice: 0.1 * 25,
   },
   {
-    id: "APT",
-    name: "apple tree",
+    id: 'APT',
+    name: 'apple tree',
     type: TreeType.APPLE_TREE,
-    asset: "",
+    asset: '',
     price: 100,
     qty: 1,
     stock: 2,
-    currency: "coin",
+    currency: 'coin',
     restockedAt: new Date(),
     restockTime: 3600000,
-    sellPrice: 0.1 * 100
+    sellPrice: 0.1 * 100,
   },
   {
-    id: "FER",
-    name: "fertilizer x4",
+    id: 'FER',
+    name: 'fertilizer x4',
     type: UtilityType.FERTILIZER,
-    asset: "",
+    asset: '',
     price: 20,
     qty: 4,
     stock: 10,
-    currency: "coin",
+    currency: 'coin',
     restockedAt: new Date(),
     restockTime: 3600000,
-    sellPrice: 0.1 * 20
-  }
+    sellPrice: 0.1 * 20,
+  },
+  {
+    id: 'CASH',
+    name: 'Cash x1000',
+    type: UtilityType.CASH,
+    asset: '',
+    price: 200000,
+    qty: 1000,
+    stock: Infinity,
+    currency: 'coin',
+    restockedAt: new Date(),
+    restockTime: 3600000,
+    sellPrice: 0.1 * 20,
+  },
 ];
 
-const Store = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+const Store = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   const [amount, setAmount] = useState(1);
   const [shopItems, setShopItems] = useState(initialItems);
   const [selectedItem, setSelectedItem] = useState<ShopItem>();
@@ -89,12 +93,12 @@ const Store = ({
     const totalPrice = item.price * stacks;
 
     if (totalPrice > balance) {
-      toast("Not enough coin");
+      toast('Not enough coin');
       return;
     }
 
     if (!item.stock) {
-      toast("OUT OF STOCKS");
+      toast('OUT OF STOCKS');
       return;
     }
 
@@ -104,9 +108,7 @@ const Store = ({
     const updatedItem = { ...item, stock: item.stock - stacks };
     toast(JSON.stringify(updatedItem));
 
-    setShopItems(
-      newItems.map((i) => (i.id === updatedItem.id ? updatedItem : i))
-    );
+    setShopItems(newItems.map((i) => (i.id === updatedItem.id ? updatedItem : i)));
     addInventoryItem(item.type, item.qty * stacks);
     changeBalance(totalPrice * -1);
   };
@@ -120,7 +122,7 @@ const Store = ({
   };
 
   return (
-    <div className={cn("space-y-6", className)} {...props}>
+    <div className={cn('space-y-6', className)} {...props}>
       <div className="grid grid-cols-5 gap-5 p-2 bg-white rounded-lg size-fit">
         {shopItems.map((item) => (
           <div
@@ -133,9 +135,7 @@ const Store = ({
           >
             <div className="relative truncate border border-black rounded-lg size-16">
               {item.id}
-              <div className="absolute bottom-0.5 right-0.5 text-black font-semibold text-md">
-                x{item.stock}
-              </div>
+              <div className="absolute bottom-0.5 right-0.5 text-black font-semibold text-md">x{item.stock}</div>
             </div>
             <div className="flex items-center justify-center">
               <CoinsIcon size={12} />
@@ -145,19 +145,14 @@ const Store = ({
         ))}
       </div>
       {selectedItem && (
-        <div className="bg-white">
-          <span>{selectedItem.name}</span>
+        <div className="bg-white text-base p-4 space-y-6">
+          <div className="capitalize">{selectedItem.name}</div>
 
-          <form className="flex" onSubmit={handleBuy}>
-            <input
-              type="number"
-              name="qty"
-              value={amount}
-              min={1}
-              max={selectedItem.stock}
-              onChange={(e) => setAmount(+e.target.value)}
-            />
-            <button type="submit">Buy</button>
+          <form className="flex gap-3" onSubmit={handleBuy}>
+            <input type="number" name="qty" value={amount} min={1} max={selectedItem.stock} onChange={(e) => setAmount(+e.target.value)} />
+            <button type="submit" className="border px-6 py-2 rounded-md">
+              Buy
+            </button>
           </form>
         </div>
       )}

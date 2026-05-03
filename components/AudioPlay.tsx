@@ -1,17 +1,17 @@
-import { ChevronFirst, ChevronLast, Play, Pause } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ChevronFirst, ChevronLast, Play, Pause } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 const trackLists = [
-  "/audio/Cozy_Cabin.mp3",
-  "/audio/Fields_of_Gold.mp3",
-  "/audio/Fishing_by_the_Lake.mp3",
-  "/audio/Harvest_Festival.mp3",
-  "/audio/Meadow_Walk.mp3",
-  "/audio/Morning_on_the_Farm.mp3",
-  "/audio/Nighttime_Fireflies.mp3",
-  "/audio/Raindrops_on_the_Roof.mp3",
-  "/audio/Stardust_Dreams.mp3",
-  "/audio/Village_Market.mp3"
+  '/audio/Cozy_Cabin.mp3',
+  '/audio/Fields_of_Gold.mp3',
+  '/audio/Fishing_by_the_Lake.mp3',
+  '/audio/Harvest_Festival.mp3',
+  '/audio/Meadow_Walk.mp3',
+  '/audio/Morning_on_the_Farm.mp3',
+  '/audio/Nighttime_Fireflies.mp3',
+  '/audio/Raindrops_on_the_Roof.mp3',
+  '/audio/Stardust_Dreams.mp3',
+  '/audio/Village_Market.mp3',
 ];
 
 // const randomTrack = (() => Math.floor(Math.random() * trackLists.length))();
@@ -21,14 +21,14 @@ const AudioPlay = () => {
   const [track, setTrack] = useState(randomTrack);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
     if (audioRef.current) return;
     const audio = new Audio(trackLists[track]);
     audioRef.current = Object.assign(audio, {
       loop: true,
-      volume: 0.3
+      volume: 0.3,
     });
     const playPromise = audio.play();
     if (playPromise !== undefined) {
@@ -57,7 +57,7 @@ const AudioPlay = () => {
 
     Object.assign(audio, {
       src: trackLists[track],
-      currentTime: 0
+      currentTime: 0,
     });
     const playPromise = audio.play();
     if (playPromise !== undefined) {
@@ -112,22 +112,10 @@ const AudioPlay = () => {
     <div className="mt-auto">
       <div className="flex gap-3">
         <ChevronFirst strokeWidth={1} onClick={() => changeTrack(-1)} />
-        {isPlaying ? (
-          <Pause
-            fill="black"
-            strokeWidth={1}
-            onClick={() => setIsPlaying(false)}
-          />
-        ) : (
-          <Play
-            fill="black"
-            strokeWidth={1}
-            onClick={() => setIsPlaying(true)}
-          />
-        )}
+        {isPlaying ? <Pause fill="black" strokeWidth={1} onClick={() => setIsPlaying(false)} /> : <Play fill="black" strokeWidth={1} onClick={() => setIsPlaying(true)} />}
         <ChevronLast strokeWidth={1} onClick={() => changeTrack(1)} />
       </div>
-      {trackLists[track]?.split("/").at(-1)}
+      {trackLists[track]?.split('/').at(-1)}
     </div>
   );
 };

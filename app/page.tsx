@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Sky, Stats } from "@react-three/drei";
-import { Physics } from "@react-three/rapier";
-import PlayerController from "@/components/PlayerController";
-import { Suspense } from "react";
-import ErrorBoundary from "@/app/custom-error-boundary";
-import { Ground, Panel } from "@/components";
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sky, Stats } from '@react-three/drei';
+import { Physics } from '@react-three/rapier';
+import PlayerController from '@/components/PlayerController';
+import { Suspense } from 'react';
+import ErrorBoundary from '@/app/custom-error-boundary';
+import { Ground, Panel } from '@/components';
 
 export default function Home() {
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
-        <Canvas camera={{ fov: 30 }}>
+        {/* <Canvas camera={{ fov: 30 }}>
           <Suspense>
             <Physics>
               <Ground />
@@ -28,7 +28,7 @@ export default function Home() {
 
           <Stats />
           <OrbitControls />
-        </Canvas>
+        </Canvas> */}
         <Panel />
       </main>
     </ErrorBoundary>
