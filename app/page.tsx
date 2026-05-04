@@ -7,11 +7,13 @@ import PlayerController from '@/components/PlayerController';
 import { Suspense } from 'react';
 import ErrorBoundary from '@/app/custom-error-boundary';
 import { Panel } from '@/components';
+import Controllers from '@/components/Controllers';
 
 export default function Home() {
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
+        <Controllers />
         <Canvas camera={{ fov: 30 }}>
           <Suspense>
             <Physics debug>

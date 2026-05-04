@@ -1,14 +1,14 @@
-import { createNoise2D } from "simplex-noise";
-import { Entity, EntityMap, OccupancyMap } from "@/types/entity";
+import { createNoise2D } from 'simplex-noise';
+import { Entity, EntityMap, OccupancyMap } from '@/types/entity';
 
 export const ENTITY_DEFS = {
   tree: {
     size: { width: 1, height: 1 },
-    harvestable: true
+    harvestable: true,
   },
   crop: {
-    growable: true
-  }
+    growable: true,
+  },
 };
 
 const occupancy: OccupancyMap = {};
@@ -16,13 +16,13 @@ const entities: EntityMap = {};
 
 const noise2D = createNoise2D();
 
-type TileType = "water" | "grass" | "farm" | "path";
+type TileType = 'water' | 'grass' | 'soil' | 'path';
 
 const TILE_MAP = {
-  w: "water",
-  g: "grass",
-  f: "soil",
-  p: "path"
+  w: 'water',
+  g: 'grass',
+  s: 'soil',
+  p: 'path',
 } as const;
 
 type Tile = {
@@ -30,63 +30,63 @@ type Tile = {
 };
 
 export const MAIN_LAYOUT = [
-  "gggggggggggggggggggggggggggggggggggggggggggggggggg", // 0
-  "gggggggggggggggggggggggggggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggggggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggggggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggwwwwwwgggggggggggggggggggggg",
-  "ggggggggggggggggggggwwwwwwwwwwgggggggggggggggggggg",
-  "gggggggggggggggggggggwwwwwwwwggggggggggggggggggggg",
-  "ggggggggggggggggggggggwwwwwwgggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg", // 10
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "pppppppppppppppppppppppppppppppppppppppppppppppppp", // Trục lộ ngang
-  "pppppppppppppppppppppppppppppppppppppppppppppppppp", // 17
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg", // 20 - Khu vực nhà ở
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "pppppppppppppppppppppppppppppppppppppppppppppppppp", // Trục lộ ngang 2
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg", // 30
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggffffffffffgggggggpgggggggffffffffffggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "gggggggggggggggggggggggpgggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg", // 40
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg",
-  "ggggggggggggggggggggggggpggggggggggggggggggggggggg" // 49
+  'gggggggggggggggggggggggggggggggggggggggggggggggggg', // 0
+  'gggggggggggggggggggggggggggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggggggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggggggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggwwwwwwgggggggggggggggggggggg',
+  'ggggggggggggggggggggwwwwwwwwwwgggggggggggggggggggg',
+  'gggggggggggggggggggggwwwwwwwwggggggggggggggggggggg',
+  'ggggggggggggggggggggggwwwwwwgggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg', // 10
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'pppppppppppppppppppppppppppppppppppppppppppppppppp', // Trục lộ ngang
+  'pppppppppppppppppppppppppppppppppppppppppppppppppp', // 17
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg', // 20 - Khu vực nhà ở
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'pppppppppppppppppppppppppppppppppppppppppppppppppp', // Trục lộ ngang 2
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg', // 30
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggssssssssssgggggggpgggggggssssssssssggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'gggggggggggggggggggggggpgggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg', // 40
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg',
+  'ggggggggggggggggggggggggpggggggggggggggggggggggggg', // 49
 ];
 
 export function generateFromLayout(layout: string[]): Tile[][] {
   return layout.map((row) =>
-    row.split("").map((char) => ({
-      type: TILE_MAP[char as keyof typeof TILE_MAP]
-    }))
+    row.split('').map((char) => ({
+      type: TILE_MAP[char as keyof typeof TILE_MAP],
+    })),
   );
 }
 
@@ -104,11 +104,11 @@ export function generateGrid(width: number, height: number): Tile[][] {
       let type: TileType;
 
       if (noise < -0.8) {
-        type = "water";
+        type = 'water';
       } else if (noise > 0.3) {
-        type = "soil";
+        type = 'soil';
       } else {
-        type = "grass";
+        type = 'grass';
       }
 
       row.push({ type });
@@ -120,13 +120,13 @@ export function generateGrid(width: number, height: number): Tile[][] {
   return grid;
 }
 
-function isTileFree(x: number, z: number) {
-  return !occupancy[key(x, z)];
-}
+// function isTileFree(x: number, z: number) {
+//   return !occupancy[key(x, z)];
+// }
 
-function placeEntity(entity: Entity) {
-  const { x, z } = entity.position;
+// function placeEntity(entity: Entity) {
+//   const { x, z } = entity.position;
 
-  occupancy[key(x, z)] = entity.id;
-  entities[entity.id] = entity;
-}
+//   occupancy[key(x, z)] = entity.id;
+//   entities[entity.id] = entity;
+// }

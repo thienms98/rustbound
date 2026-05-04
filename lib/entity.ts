@@ -77,13 +77,13 @@ export const INITIAL_ENTITIES: EntityMap = {
   crop_1: {
     id: "crop_1",
     type: "crop",
-    position: { x: 7, z: 11 },
+    position: { x: 30, z: 32 },
     state: { plantType: "carrot", growth: 0.5 }
   },
   crop_2: {
     id: "crop_2",
     type: "crop",
-    position: { x: 8, z: 11 },
+    position: { x: 31, z: 32 },
     state: { plantType: "carrot", growth: 0.2 }
   },
   crop_3: {

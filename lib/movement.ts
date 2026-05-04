@@ -17,14 +17,21 @@ export const initialStats: CharacterStats = {
 };
 
 export const getDirections = (keys: Set<string>) => {
-  const y = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
+  const y =
+    Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
 
-  const x = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
+  const x =
+    Number(keys.has('d') || keys.has('arrowright')) -
+    Number(keys.has('a') || keys.has('arrowleft'));
 
   return new Vector2(x, y);
 };
 
-export const updatePosition = (payload: { player: RapierRigidBody; direction: Vector2; isSprint: boolean }) => {
+export const updatePosition = (payload: {
+  player: RapierRigidBody;
+  direction: Vector2;
+  isSprint: boolean;
+}) => {
   const { direction, isSprint, player } = payload;
   if (direction.length() === 0) {
     player.setLinvel(
@@ -54,7 +61,15 @@ export const updatePosition = (payload: { player: RapierRigidBody; direction: Ve
   );
 };
 
-export const updateRotation = ({ player, direction, stats }: { player: RapierRigidBody; direction: Vector2; stats: CharacterStats }) => {
+export const updateRotation = ({
+  player,
+  direction,
+  stats,
+}: {
+  player: RapierRigidBody;
+  direction: Vector2;
+  stats: CharacterStats;
+}) => {
   if (!direction.length()) return;
 
   direction.normalize();

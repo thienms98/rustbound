@@ -1,5 +1,11 @@
 import { Player, Resources, Farm, Ground } from '@/components';
-import { initialStats, updateCameraPosition, updatePosition, getDirections, updateRotation } from '@/lib/movement';
+import {
+  initialStats,
+  updateCameraPosition,
+  updatePosition,
+  getDirections,
+  updateRotation,
+} from '@/lib/movement';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { Object3D, Raycaster } from 'three';
@@ -28,7 +34,18 @@ const PlayerController = () => {
   const [targets, setTargets] = useState<string[]>([]);
 
   const [animation, setAnimation] = useState<
-    'idle' | 'walking' | 'running' | 'crouch' | 'crouch_walk' | 'running_jump' | 'standing_jump' | 'drinking' | 'sitting_idle' | 'pick_fruit' | 'pick_fruit_low' | 'pick_fruit_high'
+    | 'idle'
+    | 'walking'
+    | 'running'
+    | 'crouch'
+    | 'crouch_walk'
+    | 'running_jump'
+    | 'standing_jump'
+    | 'drinking'
+    | 'sitting_idle'
+    | 'pick_fruit'
+    | 'pick_fruit_low'
+    | 'pick_fruit_high'
   >('idle');
 
   const raycasterRef = useRef(new Raycaster());
@@ -54,7 +71,7 @@ const PlayerController = () => {
 
     updateRotation(payload);
     updatePosition(payload);
-    updateCameraPosition(payload);
+    // updateCameraPosition(payload);
     setAnimation(handleAnimation(payload));
 
     // const attackResults = handleAttack(payload, (items) => {
@@ -97,24 +114,6 @@ const PlayerController = () => {
     //   }
     // }
   });
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      keys.add(e.key.toLowerCase());
-    };
-
-    const onKeyUp = (e: KeyboardEvent) => {
-      keys.delete(e.key.toLowerCase());
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
-
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('keyup', onKeyUp);
-    };
-  }, []);
 
   return (
     <>

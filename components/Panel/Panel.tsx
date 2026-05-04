@@ -26,7 +26,7 @@ const Panel = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (keys.has('b') || keys.has('tab')) {
+      if (keys.has('i') || keys.has('tab')) {
         e.preventDefault();
         togglePanel();
       }
@@ -69,7 +69,14 @@ const Panel = () => {
     >
       <div className="flex gap-6">
         {TABS.map((tab) => (
-          <div key={tab.id} className={cn('p-4 rounded-lg bg-white cursor-pointer', activeTab === tab.id && 'ring-2 ring-blue-500')} onClick={() => setActiveTab(tab.id)}>
+          <div
+            key={tab.id}
+            className={cn(
+              'p-4 rounded-lg bg-white cursor-pointer',
+              activeTab === tab.id && 'ring-2 ring-blue-500',
+            )}
+            onClick={() => setActiveTab(tab.id)}
+          >
             {tab.label}
           </div>
         ))}
