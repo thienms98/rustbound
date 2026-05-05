@@ -3,22 +3,15 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import PlayerController from "@/components/PlayerController";
 import { Suspense } from "react";
 import ErrorBoundary from "@/app/custom-error-boundary";
-import { Ground, Panel } from "@/components";
 
 export default function Home() {
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
         <Canvas camera={{ fov: 30 }}>
-          <Suspense>
-            <Physics>
-              <Ground />
-              <PlayerController />
-            </Physics>
-          </Suspense>
+          <Suspense>{/* <Physics></Physics> */}</Suspense>
 
           <ambientLight />
           <spotLight position={[0, 100, 0]} />
@@ -29,7 +22,6 @@ export default function Home() {
           <Stats />
           <OrbitControls />
         </Canvas>
-        <Panel />
       </main>
     </ErrorBoundary>
   );
