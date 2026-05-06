@@ -6,7 +6,7 @@ const Ground = forwardRef<Mesh, ThreeElements["mesh"]>((props, ref) => {
   return (
     <mesh
       rotation={[-Math.PI / 2, 0, 0]}
-      position={[10, 0, 10]}
+      position={[10, 1, 10]}
       ref={ref}
       {...props}
     >

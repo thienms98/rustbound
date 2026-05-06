@@ -1,6 +1,7 @@
 "use client";
 
 import ErrorBoundary from "@/app/custom-error-boundary";
+import Toolbar from "@/components/layout/Toolbar";
 import Grid from "@/components/objects/Grid";
 import Ground from "@/components/objects/Ground";
 import { OrbitControls, Sky, Stats } from "@react-three/drei";
@@ -24,7 +25,7 @@ export default function Home() {
     if (!gridRef.current) return;
 
     const point = e.point;
-    const origin = point.clone().setY(2);
+    const origin = point.clone().setY(-2);
     const dir = point.clone().sub(origin).normalize();
 
     raycastRef.current.set(origin, dir);
@@ -63,13 +64,15 @@ export default function Home() {
 
           <ambientLight />
           <spotLight position={[0, 100, 0]} />
-          <Sky sunPosition={[100, 20, 100]} />
+          <Sky sunPosition={[100, 20, 100]} distance={150} />
 
           <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
 
           <Stats />
           <OrbitControls />
         </Canvas>
+
+        <Toolbar />
       </main>
     </ErrorBoundary>
   );
