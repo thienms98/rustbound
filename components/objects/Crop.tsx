@@ -1,22 +1,26 @@
-import { useFarmAssets } from "@/hooks/useFarmAssets";
-import { Box3, Vector3 } from "three";
+import { useFarmAssets } from '@/hooks/useFarmAssets';
+import { useFrame } from '@react-three/fiber';
+import { memo } from 'react';
+import { Box3, Vector3 } from 'three';
 
 export enum CROP {
-  CARROT = "Carrot",
-  POTATO = "Potatoe",
-  WHEAT = "Wheat",
-  TOMATO = "Tomato"
+  CARROT = 'Carrot',
+  POTATO = 'Potatoe',
+  WHEAT = 'Wheat',
+  TOMATO = 'Tomato',
 }
 
 const TILE_SIZE = 1;
 
-const Crop = ({ name, position }: { name: string; position: Vector3 }) => {
+const Crop = memo(({ name, position }: { name: string; position: Vector3; userData: { plantedAt: number; growingTime: number } }) => {
+  useFrame(() => {});
+
+  console.log('rerender crop');
   const { nodes } = useFarmAssets();
-  const mesh = nodes[name];
+  const mesh = nodes[name].clone();
 
   const footprint = new Vector3(1, 1, 1);
 
-  console.log(mesh);
   if (!mesh) return null;
   const box = new Box3().setFromObject(mesh);
   const size = new Vector3();
@@ -24,6 +28,8 @@ const Crop = ({ name, position }: { name: string; position: Vector3 }) => {
 
   const scaleX = (footprint.x * TILE_SIZE) / size.x;
 
-  return <primitive object={mesh} position={position} scale={scaleX} />;
-};
+  return <primitive object={mesh} position={position} scale={scaleX} frustumCulled />;
+});
+
+Crop.displayName = 'Crop';
 export default Crop;

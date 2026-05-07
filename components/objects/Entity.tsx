@@ -1,24 +1,24 @@
-import { useEntity } from "@/store/entity";
-import Crop from "./Crop";
-import Soil from "./Soil";
+import { useEntity } from '@/store/entity';
+import Crop from './Crop';
+import Soil from './Soil';
+import { memo } from 'react';
 
 interface Entity {
-  type: "crop";
+  type: 'crop';
 }
 
-const Entity = () => {
+const Entity = memo(() => {
   const entities = useEntity((state) => state.entities);
-  console.log(entities);
 
   return (
     <group position={[0, 0.5, 0]}>
       {entities.map((ent) => {
         switch (ent.type) {
-          case "soil":
-            return <Soil position={ent.position} />;
+          case 'soil':
+            return <Soil key={ent.id} position={ent.position} />;
 
-          case "crop":
-            return <Crop name={ent.name} position={ent.position} />;
+          case 'crop':
+            return <Crop key={ent.id} name={ent.name} position={ent.position} />;
 
           default:
             return null;
@@ -26,6 +26,7 @@ const Entity = () => {
       })}
     </group>
   );
-};
+});
 
+Entity.displayName = 'Entity';
 export default Entity;
