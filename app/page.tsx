@@ -2,18 +2,33 @@
 
 import ErrorBoundary from "@/app/custom-error-boundary";
 import Toolbar from "@/components/layout/Toolbar";
+import Entity from "@/components/objects/Entity";
 import Grid from "@/components/objects/Grid";
 import Ground from "@/components/objects/Ground";
+import { isInsideRectangle } from "@/helpers/bounding";
+import { useAction } from "@/store/action";
+import { useEntity } from "@/store/entity";
 import { OrbitControls, Sky, Stats } from "@react-three/drei";
 import { Canvas, ThreeEvent } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Suspense, useRef } from "react";
-import { Mesh, MeshStandardMaterial, Object3D, Raycaster } from "three";
+import {
+  Mesh,
+  MeshStandardMaterial,
+  Object3D,
+  Raycaster,
+  Vector2,
+  Vector3
+} from "three";
+import { v4 } from "uuid";
 
 const GroundColor = "#573106";
 const HighlightColor = "#30ffee";
 
 export default function Home() {
+  const action = useAction((state) => state.action);
+  const addEntity = useEntity((state) => state.addEntity);
+
   const gridRef = useRef<Object3D>(null);
   const groundRef = useRef<Mesh>(null);
 
@@ -21,7 +36,6 @@ export default function Home() {
   const hoveredRef = useRef<Mesh>(null);
 
   const onPointerMove = (e: ThreeEvent<PointerEvent>) => {
-    console.log(e);
     if (!gridRef.current) return;
 
     const point = e.point;
@@ -50,6 +64,30 @@ export default function Home() {
     hoveredRef.current = hit || null;
   };
 
+  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
+    if (!hoveredRef.current) return;
+
+    const position = hoveredRef.current.position.clone();
+    const isInside = isInsideRectangle(
+      new Vector2(position.x, position.z),
+      new Vector2(0, 0),
+      new Vector2(100, 100)
+    );
+    console.log("🚀 ~ onPointerDown ~ isInside:", isInside);
+    if (!isInside) return;
+
+    if (action.type === "plant") {
+      console.log("adding");
+      addEntity({
+        id: v4(),
+        name: "Wheat_F3",
+        type: "crop",
+        position,
+        footprint: new Vector3(1, 1, 1)
+      });
+    }
+  };
+
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
@@ -57,9 +95,14 @@ export default function Home() {
           <gridHelper args={[40, 40]} position={[9.5, 0.51, 9.5]} />
           <Suspense>
             <Physics>
-              <Ground ref={groundRef} onPointerMove={onPointerMove} />
+              <Ground
+                ref={groundRef}
+                onPointerMove={onPointerMove}
+                onPointerDown={onPointerDown}
+              />
             </Physics>
             <Grid ref={gridRef} />
+            <Entity />
           </Suspense>
 
           <ambientLight />

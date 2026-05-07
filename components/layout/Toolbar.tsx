@@ -14,12 +14,15 @@ const Toolbar = () => {
             action.type === item ? "bg-white" : ""
           )}
           onClick={() => {
-            setAction({ type: item });
+            if (action.type !== item)
+              setAction({ type: item, item: undefined });
           }}
         >
           {item} ({index})
         </div>
       ))}
+
+      {action.type === ActionType.PLANT && <div className="absolute"></div>}
     </div>
   );
 };

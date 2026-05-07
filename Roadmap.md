@@ -34,8 +34,8 @@ Goal: mọi hành động đi qua chuột
 2.5 Context logic (tile quyết định action)
 
 OVERWRITE:
-2.1 Toolbar => Define action types (plant, harvest, etc.)
-2.2 Left click with toolbar to action
+~~2.1 Toolbar => Define action types (plant, harvest, etc.)~~
+~~2.2 Left click with toolbar to action~~
 
 👉 Outcome: click vào ô → game hiểu bạn muốn làm gì
 
@@ -43,7 +43,7 @@ OVERWRITE:
 
 Goal: gameplay loop hoạt động
 
-3.1 Define crop types
+~~3.1 Define crop types~~
 3.2 Plant vào tile
 3.3 Growth system (time-based)
 3.4 Stage update
