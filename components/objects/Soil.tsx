@@ -1,5 +1,5 @@
 import { useFarmAssets } from '@/hooks/useFarmAssets';
-import { Entity } from '@/store/entity';
+import { Entity } from '@/types/entity';
 import { memo } from 'react';
 import * as Three from 'three';
 

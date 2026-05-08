@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { ActionType, useAction } from "@/store/action";
+import { cn } from '@/lib/utils';
+import { ActionType, useAction } from '@/store/action';
 
 const Toolbar = () => {
   const { action, setAction } = useAction();
@@ -10,12 +10,11 @@ const Toolbar = () => {
         <div
           key={item}
           className={cn(
-            "p-1 px-3 rounded-md text-black/50 bg-white/40 hover:bg-white transition-colors cursor-pointer",
-            action.type === item ? "bg-white" : ""
+            'p-1 px-3 rounded-md text-black/50 bg-white/40 hover:bg-white transition-colors cursor-pointer',
+            action.type === item ? 'bg-white' : '',
           )}
           onClick={() => {
-            if (action.type !== item)
-              setAction({ type: item, item: undefined });
+            if (action.type !== item) setAction({ type: item, item: undefined });
           }}
         >
           {item} ({index})

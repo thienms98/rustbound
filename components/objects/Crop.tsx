@@ -1,5 +1,5 @@
 import { useFarmAssets } from '@/hooks/useFarmAssets';
-import { EntityCrop } from '@/store/entity';
+import { EntityCrop } from '@/types/entity';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { Box3, Vector3 } from 'three';
 

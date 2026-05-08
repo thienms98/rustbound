@@ -1,33 +1,10 @@
-import { Tile } from '@/components/objects/Grid';
-import { Vector2, Vector3 } from 'three';
+import { Entity } from '@/types/entity';
 import { create } from 'zustand';
 
 export enum EntityType {
   SOIL = 'soil',
   CROP = 'crop',
 }
-
-export interface BaseEntity {
-  id: string;
-  name: string;
-  position: Vector3;
-  footprint: Vector3;
-}
-
-export interface EntityCrop extends BaseEntity {
-  type: EntityType.CROP;
-  userData: {
-    plantedAt: number;
-    growthDuration: number;
-  };
-}
-
-export interface EntitySoil extends BaseEntity {
-  type: EntityType.SOIL;
-}
-
-export type Entity = EntityCrop | EntitySoil;
-
 interface EntityStore {
   entities: Entity[];
   addEntity: (item: Entity) => void;

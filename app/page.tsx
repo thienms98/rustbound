@@ -1,6 +1,7 @@
 'use client';
 
 import ErrorBoundary from '@/app/custom-error-boundary';
+import Inventory from '@/components/layout/Inventory';
 import Toolbar from '@/components/layout/Toolbar';
 import Entity from '@/components/objects/Entity';
 import Grid from '@/components/objects/Grid';
@@ -127,7 +128,7 @@ export default function Home() {
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
         <Canvas camera={{ fov: 30, position: [30, 30, 70] }}>
-          <gridHelper args={[40, 40]} position={[9.5, 0.51, 9.5]} />
+          {/* <gridHelper args={[40, 40]} position={[9.5, 0.51, 9.5]} /> */}
           <ambientLight />
           <spotLight position={[0, 100, 0]} />
           <Sky sunPosition={[100, 20, 100]} distance={150} />
@@ -145,6 +146,7 @@ export default function Home() {
         </Canvas>
 
         <Toolbar />
+        <Inventory />
       </main>
     </ErrorBoundary>
   );
