@@ -31,7 +31,7 @@ export type Entity = EntityCrop | EntitySoil;
 interface EntityStore {
   entities: Entity[];
   addEntity: (item: Entity) => void;
-  destroyEntitiesInTile: (pos: Vector3) => void;
+  removeEntities: (ids: string[]) => void;
 }
 
 export const useEntity = create<EntityStore>((set) => ({
@@ -45,13 +45,10 @@ export const useEntity = create<EntityStore>((set) => ({
         entities: [...state.entities, item],
       };
     }),
-  destroyEntitiesInTile: (pos: Vector3) =>
+  removeEntities: (ids: string[]) =>
     set((state) => {
-      const x = Math.floor(pos.x);
-      const z = Math.floor(pos.z);
-
       return {
-        entities: state.entities.filter((ent) => ent.position.x !== x || ent.position.z !== z),
+        entities: state.entities.filter((ent) => !ids.includes(ent.id)),
       };
     }),
 }));

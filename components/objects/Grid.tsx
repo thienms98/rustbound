@@ -6,9 +6,8 @@ export interface Tile {
   x: number;
   y: number;
   userData: {
-    tilled: boolean;
-    watered: boolean;
-    planted: boolean;
+    soilId?: string;
+    cropId?: string;
   };
 }
 
@@ -16,11 +15,7 @@ const grid: Tile[] = Array.from({ length: 20 }).flatMap((_, i) =>
   Array.from({ length: 20 }).map((_, j) => ({
     x: i,
     y: j,
-    userData: {
-      tilled: false,
-      watered: false,
-      planted: false,
-    },
+    userData: {},
   })),
 );
 

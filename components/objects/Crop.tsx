@@ -14,7 +14,9 @@ const TILE_SIZE = 1;
 const now = Date.now();
 
 const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
-  const [stage, setStage] = useState(Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration) + 1);
+  const [stage, setStage] = useState(
+    Math.max(0, Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration)) + 1,
+  );
 
   useEffect(() => {
     const timeout = setInterval(() => {

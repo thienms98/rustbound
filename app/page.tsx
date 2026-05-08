@@ -21,7 +21,7 @@ const LEFT_MOUSE = 0;
 
 export default function Home() {
   const action = useAction((state) => state.action);
-  const { addEntity, destroyEntitiesInTile } = useEntity((state) => state);
+  const { addEntity, removeEntities } = useEntity((state) => state);
 
   const gridRef = useRef<Object3D>(null);
   const groundRef = useRef<Mesh>(null);
@@ -64,27 +64,29 @@ export default function Home() {
     const isInside = isInsideRectangle(new Vector2(position.x, position.z), new Vector2(0, 0), new Vector2(100, 100));
     if (!isInside) return;
 
-    const { tilled, planted, watered } = hoveredRef.current.userData as {
-      tilled: boolean;
-      planted: boolean;
-      watered: boolean;
+    const { soilId, cropId } = hoveredRef.current.userData as {
+      soilId: string;
+      cropId: string;
     };
 
     if (action.type === 'plant') {
-      if (!tilled) {
+      if (!soilId) {
+        const soilRandId = v4();
         addEntity({
-          id: v4(),
+          id: soilRandId,
           name: 'soil',
           type: EntityType.SOIL,
           position,
           footprint: new Vector3(1, 1, 1),
         });
-        hoveredRef.current.userData.tilled = true;
+        hoveredRef.current.userData.soilId = soilRandId;
         return;
       }
-      if (!planted) {
+
+      if (!cropId) {
+        const cropRandId = v4();
         addEntity({
-          id: v4(),
+          id: cropRandId,
           name: 'Wheat',
           type: EntityType.CROP,
           position,
@@ -94,13 +96,14 @@ export default function Home() {
             growthDuration: 20000,
           },
         });
-        hoveredRef.current.userData.planted = true;
+        hoveredRef.current.userData.cropId = cropRandId;
         return;
       }
     }
 
     if (action.type === 'destroy') {
-      destroyEntitiesInTile(hoveredRef.current.position.clone());
+      const { cropId, soilId } = hoveredRef.current.userData;
+      removeEntities([cropId, soilId].filter((i) => Boolean(i)));
     }
   };
 
