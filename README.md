@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🧭 ROADMAP (FROM SCRATCH – MOUSE-ONLY FARM GAME)
+~~🧱 Phase 0 — Bootstrap~~
 
-## Getting Started
+Goal: project chạy được, không dính logic
 
-First, run the development server:
+~~0.1 Setup Next.js~~
+~~0.2 Setup Three.js / React Three Fiber~~
+~~0.3 Setup state (Zustand)~~
+~~0.4 Scene cơ bản (camera, light, ground)~~
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+👉 Outcome: có “sandbox 3D”
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+~~🌍 Phase 1 — Grid World~~
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Goal: nền tảng toàn bộ game
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+~~1.1 Define grid size (NxN)~~
+~~1.2 Tạo data grid (2D array)~~
+~~1.3 Map grid → world position
+~~1.4 Render grid (instanced hoặc simple mesh)~~
+~~1.5 Raycast từ chuột → tile~~
+~~1.6 Hover highlight tile~~
 
-## Learn More
+👉 Outcome: rê chuột thấy ô, click xác định ô
 
-To learn more about Next.js, take a look at the following resources:
+🖱️ Phase 2 — Interaction System (Mouse-driven)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Goal: mọi hành động đi qua chuột
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.1 Left click → select tile
+2.2 Right click → action
+2.3 Define action types (plant, harvest, etc.)
+2.4 Action dispatcher (central handler)
+2.5 Context logic (tile quyết định action)
 
-## Deploy on Vercel
+OVERWRITE:
+~~2.1 Toolbar => Define action types (plant, harvest, etc.)~~
+~~2.2 Left click with toolbar to action~~
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+👉 Outcome: click vào ô → game hiểu bạn muốn làm gì
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+~~🌱 Phase 3 — Farming Core (NO UI trước)~~
+
+Goal: gameplay loop hoạt động
+
+~~3.1 Define crop types~~
+~~3.2 Plant vào tile~~
+~~3.3 Growth system (time-based)~~
+~~3.4 Stage update~~
+~~3.5 Harvest~~
+
+👉 Outcome: loop hoàn chỉnh
+👉 click đất → trồng → chờ → thu hoạch
+
+🎒 Phase 4 — Inventory (logic trước UI)
+
+Goal: lưu trữ item
+
+4.1 Define item system
+4.2 Add item khi harvest
+4.3 Consume item khi plant
+4.4 Stack logic
+
+👉 Outcome: game có tài nguyên
+
+🧰 Phase 5 — Basic UI Layer
+
+Goal: hiển thị + control
+
+5.1 Inventory UI (grid đơn giản)
+5.2 Selected item (seed đang cầm)
+5.3 Tooltip cơ bản
+5.4 Simple HUD
+
+👉 Outcome: người chơi “biết mình đang làm gì”
+
+🔨 Phase 6 — Crafting System
+
+Goal: nâng cấp gameplay loop
+
+6.1 Define recipes
+6.2 Craft logic
+6.3 Craft UI
+6.4 Feedback (đủ/thiếu nguyên liệu)
+
+👉 Outcome: farm → craft → giá trị cao hơn
+
+🏪 Phase 7 — Shop System
+
+Goal: kinh tế
+
+7.1 Currency
+7.2 Buy seeds
+7.3 Sell items
+7.4 Shop UI
+
+👉 Outcome: loop đầy đủ:
+
+farm → craft → bán → mua → farm
+
+⏱️ Phase 8 — Time System
+
+Goal: ổn định simulation
+
+8.1 Global time source
+8.2 Growth calculation bằng timestamp
+8.3 Optional: day/night
+
+👉 Outcome: game không phụ thuộc FPS
+
+⚡ Phase 9 — Optimization (chỉ làm khi cần)
+
+Goal: giữ FPS ổn
+
+9.1 Optimize raycast (chỉ grid)
+9.2 Instanced rendering
+9.3 Update selective tiles
+
+👉 Outcome: chạy mượt
+
+🎨 Phase 10 — Polish
+
+Goal: cảm giác game
+
+10.1 Animation cây lớn
+10.2 Visual feedback (hover, click, harvest)
+10.3 UI đẹp hơn
+10.4 Sound (optional)
+
+👉 Outcome: playable game
+
+🚀 Phase 11 — Expand
+
+Goal: thêm depth
+
+11.1 Nhiều loại cây
+11.2 Nhiều recipe
+11.3 Balance
+11.4 Save/load

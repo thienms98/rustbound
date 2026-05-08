@@ -102,16 +102,19 @@ export default function Home() {
         return;
       }
 
+      console.log(soilId, cropId);
       const entities = useEntity.getState().entities;
       const crops = entities
         .filter((ent) => {
-          if (ent.type === EntityType.SOIL) return ent.id === mesh.userData.soilId;
-
+          if (ent.type === EntityType.SOIL) return ent.id === soilId;
           const isGrowth = ent.userData.plantedAt + ent.userData.growthDuration <= Date.now();
-          return ent.id === mesh.userData.cropId && isGrowth;
+          return ent.id === cropId && isGrowth;
         })
         .map((ent) => ent.id);
+      if (crops.length !== 2) return;
+
       removeEntities(crops);
+      mesh.userData = {};
     }
 
     if (action.type === 'destroy') {
