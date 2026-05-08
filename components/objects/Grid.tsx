@@ -2,7 +2,17 @@ import { ThreeElements } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Object3D } from 'three';
 
-const grid = Array.from({ length: 20 }).flatMap((_, i) =>
+export interface Tile {
+  x: number;
+  y: number;
+  userData: {
+    tilled: boolean;
+    watered: boolean;
+    planted: boolean;
+  };
+}
+
+const grid: Tile[] = Array.from({ length: 20 }).flatMap((_, i) =>
   Array.from({ length: 20 }).map((_, j) => ({
     x: i,
     y: j,

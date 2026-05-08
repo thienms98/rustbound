@@ -21,7 +21,7 @@ const LEFT_MOUSE = 0;
 
 export default function Home() {
   const action = useAction((state) => state.action);
-  const addEntity = useEntity((state) => state.addEntity);
+  const { addEntity, destroyEntitiesInTile } = useEntity((state) => state);
 
   const gridRef = useRef<Object3D>(null);
   const groundRef = useRef<Mesh>(null);
@@ -97,6 +97,10 @@ export default function Home() {
         hoveredRef.current.userData.planted = true;
         return;
       }
+    }
+
+    if (action.type === 'destroy') {
+      destroyEntitiesInTile(hoveredRef.current.position.clone());
     }
   };
 

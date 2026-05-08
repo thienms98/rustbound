@@ -1,4 +1,5 @@
-import { Vector3 } from 'three';
+import { Tile } from '@/components/objects/Grid';
+import { Vector2, Vector3 } from 'three';
 import { create } from 'zustand';
 
 export enum EntityType {
@@ -30,6 +31,7 @@ export type Entity = EntityCrop | EntitySoil;
 interface EntityStore {
   entities: Entity[];
   addEntity: (item: Entity) => void;
+  destroyEntitiesInTile: (pos: Vector3) => void;
 }
 
 export const useEntity = create<EntityStore>((set) => ({
@@ -41,6 +43,15 @@ export const useEntity = create<EntityStore>((set) => ({
 
       return {
         entities: [...state.entities, item],
+      };
+    }),
+  destroyEntitiesInTile: (pos: Vector3) =>
+    set((state) => {
+      const x = Math.floor(pos.x);
+      const z = Math.floor(pos.z);
+
+      return {
+        entities: state.entities.filter((ent) => ent.position.x !== x || ent.position.z !== z),
       };
     }),
 }));
