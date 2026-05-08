@@ -85,10 +85,14 @@ export default function Home() {
       if (!planted) {
         addEntity({
           id: v4(),
-          name: 'Wheat_F3',
+          name: 'Wheat',
           type: EntityType.CROP,
           position,
           footprint: new Vector3(1, 1, 1),
+          userData: {
+            plantedAt: Date.now(),
+            growthDuration: 20000,
+          },
         });
         hoveredRef.current.userData.planted = true;
         return;

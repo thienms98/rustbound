@@ -1,6 +1,6 @@
 import { useFarmAssets } from '@/hooks/useFarmAssets';
-import { useFrame } from '@react-three/fiber';
-import { memo } from 'react';
+import { EntityCrop } from '@/store/entity';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { Box3, Vector3 } from 'three';
 
 export enum CROP {
@@ -11,15 +11,26 @@ export enum CROP {
 }
 
 const TILE_SIZE = 1;
+const now = Date.now();
 
-const Crop = memo(({ name, position }: { name: string; position: Vector3; userData: { plantedAt: number; growingTime: number } }) => {
-  useFrame(() => {});
+const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
+  const [stage, setStage] = useState(Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration) + 1);
 
-  console.log('rerender crop');
+  useEffect(() => {
+    const timeout = setInterval(() => {
+      const now = Date.now();
+      const newStage = Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration);
+
+      setStage(newStage + 1);
+      if (newStage > 1) clearInterval(timeout);
+    }, 500);
+
+    return () => clearInterval(timeout);
+  }, []);
+
   const { nodes } = useFarmAssets();
-  const mesh = nodes[name].clone();
-
-  const footprint = new Vector3(1, 1, 1);
+  const mesh = useMemo(() => nodes[`${name}_F${stage}`]?.clone(), [nodes, name, stage]);
+  console.log('🚀 ~ mesh:', mesh);
 
   if (!mesh) return null;
   const box = new Box3().setFromObject(mesh);
@@ -28,7 +39,7 @@ const Crop = memo(({ name, position }: { name: string; position: Vector3; userDa
 
   const scaleX = (footprint.x * TILE_SIZE) / size.x;
 
-  return <primitive object={mesh} position={position} scale={scaleX} frustumCulled />;
+  return <primitive object={mesh} position={position} scale={scaleX} userData={userData} frustumCulled />;
 });
 
 Crop.displayName = 'Crop';

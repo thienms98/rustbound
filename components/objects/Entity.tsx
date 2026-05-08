@@ -3,10 +3,6 @@ import Crop from './Crop';
 import Soil from './Soil';
 import { memo } from 'react';
 
-interface Entity {
-  type: 'crop';
-}
-
 const Entity = memo(() => {
   const entities = useEntity((state) => state.entities);
 
@@ -15,10 +11,10 @@ const Entity = memo(() => {
       {entities.map((ent) => {
         switch (ent.type) {
           case 'soil':
-            return <Soil key={ent.id} position={ent.position} />;
+            return <Soil key={ent.id} {...ent} />;
 
           case 'crop':
-            return <Crop key={ent.id} name={ent.name} position={ent.position} />;
+            return <Crop key={ent.id} {...ent} />;
 
           default:
             return null;

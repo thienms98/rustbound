@@ -6,13 +6,26 @@ export enum EntityType {
   CROP = 'crop',
 }
 
-interface Entity {
+export interface BaseEntity {
   id: string;
   name: string;
-  type: EntityType;
   position: Vector3;
   footprint: Vector3;
 }
+
+export interface EntityCrop extends BaseEntity {
+  type: EntityType.CROP;
+  userData: {
+    plantedAt: number;
+    growthDuration: number;
+  };
+}
+
+export interface EntitySoil extends BaseEntity {
+  type: EntityType.SOIL;
+}
+
+export type Entity = EntityCrop | EntitySoil;
 
 interface EntityStore {
   entities: Entity[];

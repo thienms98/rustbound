@@ -45,8 +45,8 @@ Goal: gameplay loop hoạt động
 
 ~~3.1 Define crop types~~
 ~~3.2 Plant vào tile~~
-3.3 Growth system (time-based)
-3.4 Stage update
+~~3.3 Growth system (time-based)~~
+~~3.4 Stage update~~
 3.5 Harvest
 
 👉 Outcome: loop hoàn chỉnh
