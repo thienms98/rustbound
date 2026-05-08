@@ -32,7 +32,6 @@ const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
 
   const { nodes } = useFarmAssets();
   const mesh = useMemo(() => nodes[`${name}_F${stage}`]?.clone(), [nodes, name, stage]);
-  console.log('🚀 ~ mesh:', mesh);
 
   if (!mesh) return null;
   const box = new Box3().setFromObject(mesh);

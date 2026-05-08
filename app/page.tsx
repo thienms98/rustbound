@@ -21,7 +21,8 @@ const LEFT_MOUSE = 0;
 
 export default function Home() {
   const action = useAction((state) => state.action);
-  const { addEntity, removeEntities } = useEntity((state) => state);
+  const addEntity = useEntity((state) => state.addEntity);
+  const removeEntities = useEntity((state) => state.removeEntities);
 
   const gridRef = useRef<Object3D>(null);
   const groundRef = useRef<Mesh>(null);
@@ -59,12 +60,13 @@ export default function Home() {
   const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
     if (e.button !== LEFT_MOUSE) return;
     if (!hoveredRef.current) return;
+    const mesh = hoveredRef.current;
 
-    const position = hoveredRef.current.position.clone();
+    const position = mesh.position.clone();
     const isInside = isInsideRectangle(new Vector2(position.x, position.z), new Vector2(0, 0), new Vector2(100, 100));
     if (!isInside) return;
 
-    const { soilId, cropId } = hoveredRef.current.userData as {
+    const { soilId, cropId } = mesh.userData as {
       soilId: string;
       cropId: string;
     };
@@ -79,7 +81,7 @@ export default function Home() {
           position,
           footprint: new Vector3(1, 1, 1),
         });
-        hoveredRef.current.userData.soilId = soilRandId;
+        mesh.userData.soilId = soilRandId;
         return;
       }
 
@@ -93,12 +95,23 @@ export default function Home() {
           footprint: new Vector3(1, 1, 1),
           userData: {
             plantedAt: Date.now(),
-            growthDuration: 20000,
+            growthDuration: 5000,
           },
         });
-        hoveredRef.current.userData.cropId = cropRandId;
+        mesh.userData.cropId = cropRandId;
         return;
       }
+
+      const entities = useEntity.getState().entities;
+      const crops = entities
+        .filter((ent) => {
+          if (ent.type === EntityType.SOIL) return ent.id === mesh.userData.soilId;
+
+          const isGrowth = ent.userData.plantedAt + ent.userData.growthDuration <= Date.now();
+          return ent.id === mesh.userData.cropId && isGrowth;
+        })
+        .map((ent) => ent.id);
+      removeEntities(crops);
     }
 
     if (action.type === 'destroy') {
