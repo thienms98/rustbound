@@ -9,6 +9,7 @@ import Ground from '@/components/objects/Ground';
 import { isInsideRectangle } from '@/helpers/bounding';
 import { useAction } from '@/store/action';
 import { EntityType, useEntity } from '@/store/entity';
+import { useInventory } from '@/store/inventory';
 import { OrbitControls, Sky, Stats } from '@react-three/drei';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
@@ -24,6 +25,7 @@ export default function Home() {
   const action = useAction((state) => state.action);
   const addEntity = useEntity((state) => state.addEntity);
   const removeEntities = useEntity((state) => state.removeEntities);
+  const addItem = useInventory((state) => state.addItem);
 
   const gridRef = useRef<Object3D>(null);
   const groundRef = useRef<Mesh>(null);
@@ -105,16 +107,16 @@ export default function Home() {
 
       console.log(soilId, cropId);
       const entities = useEntity.getState().entities;
-      const crops = entities
-        .filter((ent) => {
-          if (ent.type === EntityType.SOIL) return ent.id === soilId;
-          const isGrowth = ent.userData.plantedAt + ent.userData.growthDuration <= Date.now();
-          return ent.id === cropId && isGrowth;
-        })
-        .map((ent) => ent.id);
+      const crops = entities.filter((ent) => {
+        if (ent.type === EntityType.SOIL) return ent.id === soilId;
+        const isGrowth = ent.userData.plantedAt + ent.userData.growthDuration <= Date.now();
+        return ent.id === cropId && isGrowth;
+      });
       if (crops.length !== 2) return;
 
-      removeEntities(crops);
+      removeEntities(crops.map((ent) => ent.id));
+      const crop = crops.find((crop) => crop.type === EntityType.CROP);
+      if (crop) addItem({ ...crop, quantity: 2 });
       mesh.userData = {};
     }
 

@@ -56,10 +56,10 @@ Goal: gameplay loop hoạt động
 
 Goal: lưu trữ item
 
-4.1 Define item system
-4.2 Add item khi harvest
+~~4.1 Define item system~~
+~~4.2 Add item khi harvest~~
 4.3 Consume item khi plant
-4.4 Stack logic
+~~4.4 Stack logic~~
 
 👉 Outcome: game có tài nguyên
 

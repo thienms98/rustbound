@@ -7,8 +7,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
+import { useInventory } from '@/store/inventory';
 
 export function Inventory() {
+  const inventory = useInventory((state) => state.items);
+  console.log('🚀 ~ Inventory ~ inventory:', inventory);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
