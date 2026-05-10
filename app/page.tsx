@@ -10,7 +10,7 @@ import { isInsideRectangle } from '@/helpers/bounding';
 import { useAction } from '@/store/action';
 import { EntityType, useEntity } from '@/store/entity';
 import { useInventory } from '@/store/inventory';
-import { OrbitControls, Sky, Stats } from '@react-three/drei';
+import { OrbitControls, Sky, Stats, useGLTF } from '@react-three/drei';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Suspense, useRef } from 'react';
@@ -22,6 +22,7 @@ const HighlightColor = '#30ffee';
 const LEFT_MOUSE = 0;
 
 export default function Home() {
+  useGLTF('crops.glb');
   const action = useAction((state) => state.action);
   const addEntity = useEntity((state) => state.addEntity);
   const removeEntities = useEntity((state) => state.removeEntities);
@@ -92,7 +93,7 @@ export default function Home() {
         const cropRandId = v4();
         addEntity({
           id: cropRandId,
-          name: 'Wheat',
+          name: 'wheat',
           type: EntityType.CROP,
           position,
           footprint: new Vector3(1, 1, 1),

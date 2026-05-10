@@ -4,19 +4,22 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { Box3, Vector3 } from 'three';
 
 export enum CROP {
-  CARROT = 'Carrot',
-  POTATO = 'Potatoe',
-  WHEAT = 'Wheat',
-  TOMATO = 'Tomato',
+  CARROT = 'carrot',
+  POTATO = 'potatoe',
+  WHEAT = 'wheat',
+  TOMATO = 'tomato',
 }
 
 const TILE_SIZE = 1;
 const now = Date.now();
 
+function capitalize(str: string) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
-  const [stage, setStage] = useState(
-    Math.max(0, Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration)) + 1,
-  );
+  const [stage, setStage] = useState(Math.max(0, Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration)) + 1);
 
   useEffect(() => {
     const timeout = setInterval(() => {
@@ -31,7 +34,7 @@ const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
   }, []);
 
   const { nodes } = useFarmAssets();
-  const mesh = useMemo(() => nodes[`${name}_F${stage}`]?.clone(), [nodes, name, stage]);
+  const mesh = useMemo(() => nodes[`${capitalize(name)}_F${stage}`]?.clone(), [nodes, name, stage]);
 
   if (!mesh) return null;
   const box = new Box3().setFromObject(mesh);
