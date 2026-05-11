@@ -1,7 +1,9 @@
 import { useFarmAssets } from '@/hooks/useFarmAssets';
 import { EntityCrop } from '@/types/entity';
-import { memo, useEffect, useMemo, useState } from 'react';
-import { Box3, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber';
+import gsap from 'gsap';
+import { memo, useEffect, useMemo, useRef } from 'react';
+import { Mesh, Object3D } from 'three';
 
 export enum CROP {
   CARROT = 'carrot',
@@ -10,40 +12,55 @@ export enum CROP {
   TOMATO = 'tomato',
 }
 
-const TILE_SIZE = 1;
-const now = Date.now();
-
-function capitalize(str: string) {
-  if (!str) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-const Crop = memo(({ name, position, footprint, userData }: EntityCrop) => {
-  const [stage, setStage] = useState(Math.max(0, Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration)) + 1);
-
-  useEffect(() => {
-    const timeout = setInterval(() => {
-      const now = Date.now();
-      const newStage = Math.floor(((now - userData.plantedAt) * 2) / userData.growthDuration);
-
-      setStage(newStage + 1);
-      if (newStage > 1) clearInterval(timeout);
-    }, 500);
-
-    return () => clearInterval(timeout);
-  }, []);
-
+const Crop = memo(({ name, position, userData }: EntityCrop) => {
   const { nodes } = useFarmAssets();
-  const mesh = useMemo(() => nodes[`${capitalize(name)}_F${stage}`]?.clone(), [nodes, name, stage]);
+  const groupRef = useRef<Object3D>(null);
+  const stageRef = useRef(0);
+  const frameCounterRef = useRef(Math.floor(Math.random() * 30));
+  const meshes = useMemo(
+    () =>
+      Object.values(nodes)
+        .filter((mesh) => mesh.name.toLowerCase().includes(name.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((mesh) => {
+          const { geometry, material } = mesh as Mesh;
+          const newMesh = new Mesh(geometry, material);
+          newMesh.name = mesh.name;
+          return newMesh;
+        })
+        .filter((i) => Boolean(i)),
+    [nodes, name],
+  );
 
-  if (!mesh) return null;
-  const box = new Box3().setFromObject(mesh);
-  const size = new Vector3();
-  box.getSize(size);
+  useFrame(() => {
+    frameCounterRef.current++;
+    if (frameCounterRef.current % 30 !== 0) return;
 
-  const scaleX = (footprint.x * TILE_SIZE) / size.x;
+    if (!groupRef.current || stageRef.current >= meshes.length - 1) return;
+    const now = Date.now();
+    const timePassed = now - userData.plantedAt;
+    const stage = Math.max(0, Math.floor((timePassed * 2) / userData.growthDuration));
 
-  return <primitive object={mesh} position={position} scale={scaleX} userData={userData} frustumCulled />;
+    // return on stage unchanged
+    if (stageRef.current === stage) return;
+
+    stageRef.current = stage;
+
+    groupRef.current.children.forEach((mesh, index) => {
+      mesh.visible = index === stage;
+    });
+  });
+
+  return (
+    <group ref={groupRef} position={position}>
+      {meshes.map(
+        (mesh) =>
+          mesh && (
+            <primitive key={mesh.uuid} object={mesh} scale={0.4} userData={userData} frustumCulled visible={false} />
+          ),
+      )}
+    </group>
+  );
 });
 
 Crop.displayName = 'Crop';

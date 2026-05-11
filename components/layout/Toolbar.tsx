@@ -1,8 +1,13 @@
 import { cn } from '@/lib/utils';
 import { ActionType, useAction } from '@/store/action';
+import { useEffect } from 'react';
 
 const Toolbar = () => {
   const { action, setAction } = useAction();
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {};
+  }, []);
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 px-8 py-3 rounded-md bg-transparent backdrop-blur-2xl">

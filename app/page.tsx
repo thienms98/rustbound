@@ -10,7 +10,7 @@ import { isInsideRectangle } from '@/helpers/bounding';
 import { useAction } from '@/store/action';
 import { EntityType, useEntity } from '@/store/entity';
 import { useInventory } from '@/store/inventory';
-import { OrbitControls, Sky, Stats, useGLTF } from '@react-three/drei';
+import { OrbitControls, Sky, Stats } from '@react-three/drei';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Suspense, useRef } from 'react';
@@ -22,7 +22,7 @@ const HighlightColor = '#30ffee';
 const LEFT_MOUSE = 0;
 
 export default function Home() {
-  useGLTF('crops.glb');
+  // useGLTF('crops.glb');
   const action = useAction((state) => state.action);
   const addEntity = useEntity((state) => state.addEntity);
   const removeEntities = useEntity((state) => state.removeEntities);
@@ -130,22 +130,26 @@ export default function Home() {
   return (
     <ErrorBoundary title="Dashboard Error">
       <main className="w-screen h-screen">
-        <Canvas camera={{ fov: 30, position: [30, 30, 70] }}>
+        <Canvas camera={{ fov: 24, position: [5, 20, 33] }}>
           {/* <gridHelper args={[40, 40]} position={[9.5, 0.51, 9.5]} /> */}
           <ambientLight />
           <spotLight position={[0, 100, 0]} />
           <Sky sunPosition={[100, 20, 100]} distance={150} />
           <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
-          <OrbitControls />
+          <OrbitControls
+          // enableRotate={false} enableZoom={false} enablePan={false}
+          />
           <Stats />
 
-          <Suspense>
-            <Physics>
-              <Ground ref={groundRef} onPointerMove={onPointerMove} onPointerDown={onPointerDown} />
-            </Physics>
-            <Grid ref={gridRef} />
-            <Entity />
-          </Suspense>
+          <group position={[-10, 0, -10]}>
+            <Suspense>
+              <Physics>
+                <Ground ref={groundRef} onPointerMove={onPointerMove} onPointerDown={onPointerDown} />
+              </Physics>
+              <Grid ref={gridRef} />
+              <Entity />
+            </Suspense>
+          </group>
         </Canvas>
 
         <Toolbar />
