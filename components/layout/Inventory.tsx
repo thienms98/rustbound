@@ -17,7 +17,10 @@ export function Inventory() {
         <BackpackIcon size={64} />
       </Button>
 
-      <div className={cn('fixed inset-0 transition-all bg-black/20', isOpen ? 'visible' : 'invisible')} onClick={() => setIsOpen(false)}>
+      <div
+        className={cn('fixed inset-0 transition-all bg-black/20', isOpen ? 'visible' : 'invisible')}
+        onClick={() => setIsOpen(false)}
+      >
         <div className="bg-white p-20">
           <h2>Inventory</h2>
 
@@ -25,9 +28,12 @@ export function Inventory() {
             {inventory.map((item) => (
               <div key={item.id} className="size-12 rounded-md border relative">
                 {item.name}
-                <div className="absolute text-xs right-0 bottom-0 p-px rounded-sm bg-white">x{item.quantity}</div>
 
-                <div className="">{CROPS[item.name]?.description}</div>
+                {'quantity' in item && (
+                  <div className="absolute text-xs right-0 bottom-0 p-px rounded-sm bg-white">x{item.quantity}</div>
+                )}
+
+                {/* <div className="">{CROPS[item.name]?.description}</div> */}
               </div>
             ))}
           </div>

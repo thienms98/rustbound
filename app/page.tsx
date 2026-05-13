@@ -78,7 +78,6 @@ export default function Home() {
 
     if (hand.name === 'shovel') {
       if (!soilId) {
-        console.log('cuoc dat');
         const soilRandId = v4();
         addEntity({
           id: soilRandId,
@@ -90,15 +89,13 @@ export default function Home() {
         mesh.userData.soilId = soilRandId;
         return;
       } else {
-        console.log('xuc bo o dat');
         const { cropId, soilId } = hoveredRef.current.userData;
         removeEntities([cropId, soilId].filter((i) => Boolean(i)));
         mesh.userData = {};
       }
     }
 
-    if (!cropId && hand.type === EntityType.SEED) {
-      console.log('gieo hat');
+    if (!cropId && soilId && hand.type === EntityType.SEED) {
       const cropRandId = v4();
       addEntity({
         ...hand.crop,
@@ -114,7 +111,6 @@ export default function Home() {
     }
 
     if (cropId && soilId && hand.name === 'scythe') {
-      console.log('thu hoach');
       const entities = useEntity.getState().entities;
       const crops = entities.filter((ent) => {
         if (ent.type === EntityType.SOIL) return ent.id === soilId;

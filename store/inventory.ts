@@ -1,8 +1,8 @@
-import { Entity, EntityCrop } from '@/types/entity';
+import { EntityCrop } from '@/types/entity';
+import { Vector3 } from 'three';
 import { v4 } from 'uuid';
 import { create } from 'zustand';
 import { EntityType } from './entity';
-import { Vector3 } from 'three';
 
 export const MAX_STACK = 9;
 
@@ -89,10 +89,20 @@ export const useInventory = create<StorageStore>((set) => ({
     set((state) => {
       const newItems = [...state.items];
 
+      if (item.type === EntityType.TOOL) {
+        newItems.push({
+          ...item,
+          id: v4(),
+        });
+        return { items: newItems };
+      }
       let quantity = item.quantity;
 
       while (quantity > 0) {
-        const exist = newItems.find((i) => i.type === item.type && i.quantity < MAX_STACK);
+        const exist = newItems.find((i) => i.name === item.name && i.type === item.type && i.quantity < MAX_STACK) as
+          | Exclude<InventorySlot, InventoryTool>
+          | undefined;
+
         const amount = Math.min(quantity, Math.max(MAX_STACK - (exist?.quantity || 0), 0));
 
         if (!exist)
