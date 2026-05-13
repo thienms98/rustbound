@@ -4,6 +4,8 @@ import { create } from 'zustand';
 export enum EntityType {
   SOIL = 'soil',
   CROP = 'crop',
+  SEED = 'seed',
+  TOOL = 'tool',
 }
 interface EntityStore {
   entities: Entity[];
