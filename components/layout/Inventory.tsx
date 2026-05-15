@@ -3,11 +3,9 @@ import { Button } from '../ui/button';
 import { useInventory } from '@/store/inventory';
 import { BackpackIcon } from 'lucide-react';
 import { useState } from 'react';
-import { CROPS } from '@/data/items/crops';
 
 export function Inventory() {
   const inventory = useInventory((state) => state.items);
-  console.log('🚀 ~ Inventory ~ inventory:', inventory);
 
   const [isOpen, setIsOpen] = useState(false);
 

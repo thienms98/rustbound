@@ -12,7 +12,9 @@ type CropType = {
     description: string;
     icon: string;
     stackable: boolean;
-    value: number;
+    value?: number;
+    growthTime?: number;
+    durability?: number;
   };
 };
 

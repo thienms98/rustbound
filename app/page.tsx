@@ -1,6 +1,7 @@
 'use client';
 
 import ErrorBoundary from '@/app/custom-error-boundary';
+import Craft from '@/components/layout/Craft';
 import Inventory from '@/components/layout/Inventory';
 import Toolbar from '@/components/layout/Toolbar';
 import Entity from '@/components/objects/Entity';
@@ -135,9 +136,7 @@ export default function Home() {
           <spotLight position={[0, 100, 0]} />
           <Sky sunPosition={[100, 20, 100]} distance={150} />
           <fog attach="fog" args={[0xa0a0a0, 200, 300]} />
-          <OrbitControls
-          // enableRotate={false} enableZoom={false} enablePan={false}
-          />
+          <OrbitControls enableRotate={false} enableZoom={false} enablePan={false} />
           <Stats />
 
           <group position={[-10, 0, -10]}>
@@ -153,6 +152,7 @@ export default function Home() {
 
         <Toolbar />
         <Inventory />
+        <Craft />
       </main>
     </ErrorBoundary>
   );

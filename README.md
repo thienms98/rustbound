@@ -68,7 +68,7 @@ Goal: lưu trữ item
 Goal: hiển thị + control
 
 ~~5.1 Inventory UI (grid đơn giản)~~
-5.2 Selected item (seed đang cầm)
+~~5.2 Selected item (seed đang cầm)~~
 5.3 Tooltip cơ bản
 5.4 Simple HUD
 
