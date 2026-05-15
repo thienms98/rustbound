@@ -24,6 +24,7 @@ const LEFT_MOUSE = 0;
 export default function Home() {
   // useGLTF('crops.glb');
   const action = useAction((state) => state.action);
+  const hand = useAction((state) => state.hand);
   const addEntity = useEntity((state) => state.addEntity);
   const removeEntities = useEntity((state) => state.removeEntities);
   const addItem = useInventory((state) => state.addItem);
@@ -68,14 +69,14 @@ export default function Home() {
 
     const position = mesh.position.clone();
     const isInside = isInsideRectangle(new Vector2(position.x, position.z), new Vector2(0, 0), new Vector2(100, 100));
-    if (!isInside) return;
+    if (!isInside || !hand) return;
 
     const { soilId, cropId } = mesh.userData as {
-      soilId: string;
-      cropId: string;
+      soilId?: string;
+      cropId?: string;
     };
 
-    if (action.type === 'plant') {
+    if (hand.name === 'shovel') {
       if (!soilId) {
         const soilRandId = v4();
         addEntity({
@@ -87,26 +88,29 @@ export default function Home() {
         });
         mesh.userData.soilId = soilRandId;
         return;
+      } else {
+        const { cropId, soilId } = hoveredRef.current.userData;
+        removeEntities([cropId, soilId].filter((i) => Boolean(i)));
+        mesh.userData = {};
       }
+    }
 
-      if (!cropId) {
-        const cropRandId = v4();
-        addEntity({
-          id: cropRandId,
-          name: 'wheat',
-          type: EntityType.CROP,
-          position,
-          footprint: new Vector3(1, 1, 1),
-          userData: {
-            plantedAt: Date.now(),
-            growthDuration: 5000,
-          },
-        });
-        mesh.userData.cropId = cropRandId;
-        return;
-      }
+    if (!cropId && soilId && hand.type === EntityType.SEED) {
+      const cropRandId = v4();
+      addEntity({
+        ...hand.crop,
+        id: cropRandId,
+        position,
+        userData: {
+          ...hand.crop.userData,
+          plantedAt: Date.now(),
+        },
+      });
+      mesh.userData.cropId = cropRandId;
+      return;
+    }
 
-      console.log(soilId, cropId);
+    if (cropId && soilId && hand.name === 'scythe') {
       const entities = useEntity.getState().entities;
       const crops = entities.filter((ent) => {
         if (ent.type === EntityType.SOIL) return ent.id === soilId;
@@ -119,11 +123,6 @@ export default function Home() {
       const crop = crops.find((crop) => crop.type === EntityType.CROP);
       if (crop) addItem({ ...crop, quantity: 2 });
       mesh.userData = {};
-    }
-
-    if (action.type === 'destroy') {
-      const { cropId, soilId } = hoveredRef.current.userData;
-      removeEntities([cropId, soilId].filter((i) => Boolean(i)));
     }
   };
 

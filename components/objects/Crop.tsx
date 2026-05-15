@@ -1,8 +1,7 @@
 import { useFarmAssets } from '@/hooks/useFarmAssets';
 import { EntityCrop } from '@/types/entity';
 import { useFrame } from '@react-three/fiber';
-import gsap from 'gsap';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { Mesh, Object3D } from 'three';
 
 export enum CROP {
@@ -16,6 +15,7 @@ const Crop = memo(({ name, position, userData }: EntityCrop) => {
   const { nodes } = useFarmAssets();
   const groupRef = useRef<Object3D>(null);
   const stageRef = useRef(0);
+  // eslint-disable-next-line react-hooks/purity
   const frameCounterRef = useRef(Math.floor(Math.random() * 30));
   const meshes = useMemo(
     () =>
@@ -54,9 +54,9 @@ const Crop = memo(({ name, position, userData }: EntityCrop) => {
   return (
     <group ref={groupRef} position={position}>
       {meshes.map(
-        (mesh) =>
+        (mesh, index) =>
           mesh && (
-            <primitive key={mesh.uuid} object={mesh} scale={0.4} userData={userData} frustumCulled visible={false} />
+            <primitive key={mesh.uuid} object={mesh} scale={0.4} userData={userData} frustumCulled visible={!index} />
           ),
       )}
     </group>
